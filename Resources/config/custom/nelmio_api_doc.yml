@@ -1,0 +1,34 @@
+nelmio_api_doc:
+    name:                     'Pane&Design API documentation'
+    exclude_sections:         []
+    default_sections_opened:  true
+    motd:
+        template:             'NelmioApiDocBundle::Components/motd.html.twig'
+    request_listener:
+        enabled:              true
+        parameter:            _doc
+    sandbox:
+        enabled:              true
+        endpoint:             null
+        accept_type:          null
+        body_format: ~
+        request_format: ~
+        authentication:
+            delivery:         query # Required
+            name:             access_token # Required
+            type:             bearer
+        entity_to_choice:     true
+    swagger:
+        api_base_path:        /api
+        swagger_version:      '1.2'
+        api_version:          '1.0'
+        info:
+            title:                Pane&Design
+            description:          'API of Pane&Design'
+            TermsOfServiceUrl:    null
+            contact:              null
+            license:              null
+            licenseUrl:           null
+    cache:
+        enabled:              false
+        file:                 '%kernel.cache_dir%/api-doc.cache'
