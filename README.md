@@ -106,3 +106,15 @@ imports:
     - { resource: "@PedApiBundle/Resources/config/custom/nelmio_api_doc.yml" }
 ...
 ```
+
+Implement API
+
+```yml
+// app/config/custom/api.yml
+public_v1:
+    type:         rest
+    prefix:       /v1
+    resource:     "@PedApiBundle/Controller/Api/ApiPublicController.php"
+    name_prefix:  api_1_
+    ...
+```

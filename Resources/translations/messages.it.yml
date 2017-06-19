@@ -1,0 +1,3 @@
+api:
+    shared:
+        error_refresh_token: Impossibile fare il refresh dell'access token!
