@@ -57,7 +57,7 @@ class AppKernel extends Kernel
             new \FOS\OAuthServerBundle\FOSOAuthServerBundle(),
             new \FOS\RestBundle\FOSRestBundle(),
             new \JMS\SerializerBundle\JMSSerializerBundle(),
-            new \PaneeDesign\StorageBundle\PedApiBundle(),
+            new \PaneeDesign\ApiBundle\PedApiBundle(),
         );
 
         // ...
@@ -74,6 +74,22 @@ class AppKernel extends Kernel
 
 Step 3: Configurations
 ----------------------
+
+Add parameters
+
+```
+// app/config/parameters.yml.dist
+parameters:
+    ...
+    api_server_host:         'https://api.paneedesign.com'
+    api_type:                oauth2
+    api_client_id:           <client_id>
+    api_client_secret:       <client_secret>
+    api_grant_url:           '%api_server_host%/oauth/v2/api_key'
+    api_access_token_url:    '%api_server_host%/oauth/v2/token'
+    api_authorization_url:   '%api_server_host%/oauth/v2/authorize'
+    api_infos_url:           '%api_server_host%/api/user'
+```
 
 Add configuration
 

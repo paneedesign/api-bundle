@@ -6,9 +6,9 @@
  * Time: 09:22
  */
 
-namespace PaneeDesign\ApiBundle\Oauth2;
+namespace PaneeDesign\ApiBundle\OAuth2;
 
-use OAuth2;
+use OAuth2 as AdoyOAuth2;
 
 class Client
 {
@@ -19,7 +19,7 @@ class Client
     protected $grant;
     protected $params;
 
-    public function __construct(OAuth2\Client $client, $authEndpoint, $tokenEndpoint, $redirectUrl, $grant, $params)
+    public function __construct(AdoyOAuth2\Client $client, $authEndpoint, $tokenEndpoint, $redirectUrl, $grant, $params)
     {
         $this->client        = $client;
         $this->authEndpoint  = $authEndpoint;
@@ -47,7 +47,7 @@ class Client
             return $accessToken;
         }
 
-        throw new OAuth2\Exception(sprintf('Unable to obtain Access Token. Response from the Server: %s ', var_export($response)));
+        throw new AdoyOAuth2\Exception(sprintf('Unable to obtain Access Token. Response from the Server: %s ', var_export($response)));
     }
 
     public function fetch($url)

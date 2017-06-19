@@ -10,7 +10,9 @@ namespace PaneeDesign\ApiBundle\OAuth2;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
+
 use FOS\OAuthServerBundle\Storage\GrantExtensionInterface;
+
 use OAuth2\Model\IOAuth2Client;
 
 class ApiKeyGrantExtension implements GrantExtensionInterface
