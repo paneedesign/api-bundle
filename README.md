@@ -54,11 +54,18 @@ class AppKernel extends Kernel
     {
         $bundles = array(
             // ...
-
+            new \FOS\OAuthServerBundle\FOSOAuthServerBundle(),
+            new \FOS\RestBundle\FOSRestBundle(),
+            new \JMS\SerializerBundle\JMSSerializerBundle(),
             new \PaneeDesign\StorageBundle\PedApiBundle(),
         );
 
         // ...
+        
+        if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
+            // ...
+            $bundles[] = new \Nelmio\ApiDocBundle\NelmioApiDocBundle();
+        }
     }
 
     // ...
@@ -68,3 +75,18 @@ class AppKernel extends Kernel
 Step 3: Configurations
 ----------------------
 
+Add configuration
+
+```yml
+// app/config/config.yml
+imports:
+    - { resource: "@PedApiBundle/Resources/config/config.yml" }
+...
+```
+
+```yml
+// app/config/config_dev.yml
+imports:
+    - { resource: "@PedApiBundle/Resources/config/custom/nelmio_api_doc.yml" }
+...
+```
