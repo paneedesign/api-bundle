@@ -24,16 +24,16 @@ abstract class ApiItemsController extends FOSRestController
     /**
      * @var ItemHandler
      */
-	private $handler;
+    private $handler;
 
     /**
      * @var ContainerInterface
      */
     protected $container;
 
-	public function setContainer(ContainerInterface $container = null)
-	{
-		parent::setContainer($container);
+    public function setContainer(ContainerInterface $container = null)
+    {
+        parent::setContainer($container);
 
         $request = Request::createFromGlobals();
         $locale  = $request->query->get('_locale');
@@ -45,14 +45,14 @@ abstract class ApiItemsController extends FOSRestController
         }
 
         $this->handler = $this->getHandler();
-		$this->handler->setAccessToken($accessToken);
+        $this->handler->setAccessToken($accessToken);
         $this->handler->setLocale($locale);
-	}
+    }
 
-	/**
-	 * @return ItemHandler
-	 */
-	abstract protected function getHandler();
+    /**
+     * @return ItemHandler
+     */
+    abstract protected function getHandler();
 
     /**
      * List all items.
@@ -75,7 +75,7 @@ abstract class ApiItemsController extends FOSRestController
      *
      * @Annotations\QueryParam(name="offset", requirements="\d+", strict=true, default=0, description="Offset from which to start listing items.")
      * @Annotations\QueryParam(name="limit",  requirements="\d+", strict=true, default=5, description="How many items to return.")
-	 *
+     *
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
      * @return array
@@ -114,8 +114,8 @@ abstract class ApiItemsController extends FOSRestController
      *
      * @return object
      */
-	public function postAction(Request $request)
-	{
+    public function postAction(Request $request)
+    {
         try {
             $toPost  = ApiHelper::formatRequestData($request->request->all());
             $newItem = $this->handler->post(
@@ -128,43 +128,43 @@ abstract class ApiItemsController extends FOSRestController
         }
     }
 
-	/**
-	 * Partially update an Item from the submitted data
-	 *
-	 * @ApiDoc(
-	 *   resource = true,
-	 *   requirements = {
-	 *      {
-	 *          "name" = "access_token",
-	 *          "dataType" = "string",
-	 *          "requirement" = "[a-zA-Z0-9]+",
-	 *          "description" = "OAuth2 Access Token to allow call"
-	 *      }
-	 *   },
-	 *   statusCodes = {
-	 *     204 = "Returned when successful",
-	 *     400 = "Returned when the form has errors"
-	 *   },
-	 *   views = { "items", "default" }
-	 * )
-	 *
-	 * @param Request $request the request object
-	 * @param int     $id      the item id
-	 *
+    /**
+     * Partially update an Item from the submitted data
+     *
+     * @ApiDoc(
+     *   resource = true,
+     *   requirements = {
+     *      {
+     *          "name" = "access_token",
+     *          "dataType" = "string",
+     *          "requirement" = "[a-zA-Z0-9]+",
+     *          "description" = "OAuth2 Access Token to allow call"
+     *      }
+     *   },
+     *   statusCodes = {
+     *     204 = "Returned when successful",
+     *     400 = "Returned when the form has errors"
+     *   },
+     *   views = { "items", "default" }
+     * )
+     *
+     * @param Request $request the request object
+     * @param int     $id      the item id
+     *
      * @return object
-	 *
-	 * @throws NotFoundHttpException when item not exist
-	 */
-	public function patchAction(Request $request, $id)
-	{
+     *
+     * @throws NotFoundHttpException when item not exist
+     */
+    public function patchAction(Request $request, $id)
+    {
         $toPatch = ApiHelper::formatRequestData($request->request->all());
-		$newItem = $this->getHandler()->patch(
-			$id,
-			$toPatch
-		);
+        $newItem = $this->getHandler()->patch(
+            $id,
+            $toPatch
+        );
 
-		return $newItem;
-	}
+        return $newItem;
+    }
 
     /**
      * Delete Item from the submitted data
@@ -221,16 +221,15 @@ abstract class ApiItemsController extends FOSRestController
      *
      * @Annotations\View(templateVar="item")
      *
-     * @param int     $id      the item id
+     * @param ParamFetcherInterface $paramFetcher
+     * @param int $id the item id
      *
      * @return object
      *
      * @throws NotFoundHttpException when item not exist
      */
-    public function getAction($id)
+    public function getAction(ParamFetcherInterface $paramFetcher, $id)
     {
-		//Check if the item is equal to authenticated item: $this->container->get('security.token_storage')->getToken()
-
         $item = $this->getOr404($id);
 
         return $item;
@@ -277,7 +276,7 @@ abstract class ApiItemsController extends FOSRestController
     protected function getMe($accessToken)
     {
         /* @var TokenManager $tokenManager */
-	    $tokenManager = $this->container->get('fos_oauth_server.access_token_manager.default');
+        $tokenManager = $this->container->get('fos_oauth_server.access_token_manager.default');
         $accessToken  = $tokenManager->findTokenByToken($accessToken);
 
         if($accessToken === null) {
@@ -327,19 +326,19 @@ abstract class ApiItemsController extends FOSRestController
         return $translator->trans($id, $parameters, $domain, $locale);
     }
 
-	protected function getBy($criteria, ParamFetcherInterface $paramFetcher, $orderBy = null)
-	{
-		$offset  = $paramFetcher->get('offset');
-		$limit   = $paramFetcher->get('limit');
+    protected function getBy($criteria, ParamFetcherInterface $paramFetcher, $orderBy = null)
+    {
+        $offset  = $paramFetcher->get('offset');
+        $limit   = $paramFetcher->get('limit');
 
-		if (empty($limit)){
-			$limit = null;
-		}
+        if (empty($limit)){
+            $limit = null;
+        }
 
-		return $this->handler->getBy($criteria, $orderBy, $limit, $offset);
-	}
+        return $this->handler->getBy($criteria, $orderBy, $limit, $offset);
+    }
 
-	protected function getAccessToken(Request $request)
+    protected function getAccessToken(Request $request)
     {
         $accessToken = $request->query->get('access_token');
         $accessToken = trim(str_replace('Bearer', '', $accessToken));
