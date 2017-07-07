@@ -30,7 +30,7 @@ class ApiPublicController extends FOSRestController
     /**
      * @var string
      */
-    private $_locale;
+    protected $_locale;
 
     public function setContainer(ContainerInterface $container = null)
     {
@@ -107,7 +107,7 @@ class ApiPublicController extends FOSRestController
         return $toReturn;
     }
 
-    private function getAccessToken(Request $request)
+    protected function getAccessToken(Request $request)
     {
         $accessToken = $request->query->get('access_token');
         $accessToken = trim(str_replace('Bearer', '', $accessToken));
@@ -137,7 +137,7 @@ class ApiPublicController extends FOSRestController
      *
      * @return string The translated string
      */
-    private function translate($id, array $parameters = array(), $domain = null, $locale = null)
+    protected function translate($id, array $parameters = array(), $domain = null, $locale = null)
     {
         $translator = $this->get('translator');
 
