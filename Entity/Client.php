@@ -33,6 +33,6 @@ class Client extends BaseClient implements ClientInterface
      */
     public function getPublicId()
     {
-        return $this->getRandomId();
+        return sprintf('%s_%s', $this->getId(), $this->getRandomId());
     }
 }

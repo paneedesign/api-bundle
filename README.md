@@ -107,6 +107,14 @@ imports:
 ...
 ```
 
+```yml
+// app/config/routing.yml
+ped_api:
+    resource: '@PedApiBundle/Resources/config/routing.yml'
+    prefix:   /
+...
+```
+
 Implement API
 
 ```yml
