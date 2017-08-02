@@ -15,16 +15,12 @@ class JsonException extends \Exception implements JsonExceptionInterface
 {
     /**
      * JsonException constructor.
-     * @param string|array $message
+     * @param string $message
      * @param int $code
      * @param Exception|null $previous
      */
     public function __construct($message = '', $code = Response::HTTP_INTERNAL_SERVER_ERROR, Exception $previous = null)
     {
-        if (is_array($message) === true) {
-            $message = \json_encode($message);
-        }
-
         parent::__construct($message, $code, $previous);
     }
 }

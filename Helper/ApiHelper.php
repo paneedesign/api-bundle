@@ -8,6 +8,7 @@
 namespace PaneeDesign\ApiBundle\Helper;
 
 use PaneeDesign\ApiBundle\Exception\JsonException;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ApiHelper
@@ -29,7 +30,7 @@ class ApiHelper
      * @param string $message
      * @param string $description
      *
-     * @throws JsonException
+     * @return Response
      */
     public static function customResponse(
         $httpCode = self::CODE_ERROR,
@@ -43,7 +44,11 @@ class ApiHelper
             'description' => $description
         ];
 
-        throw new JsonException($payload, $httpCode);
+        return new Response(
+            \json_encode($payload),
+            $httpCode,
+            ['Content-Type' => 'application/json']
+        );
     }
 
     /**
@@ -61,7 +66,7 @@ class ApiHelper
      * Error Response
      *
      * @param int $httpCode
-     * @param string|array $message
+     * @param string $message
      * @throws JsonException
      */
     public static function errorResponse($httpCode = self::CODE_ERROR, $message = 'Internal Server Error')
