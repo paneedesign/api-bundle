@@ -35,7 +35,7 @@ class ItemHandler implements ItemHandlerInterface
     protected $container;
 
     protected $accessToken;
-    protected $_locale;
+    protected $locale;
 
     public function __construct(ObjectManager $om, ContainerInterface $container, FormFactoryInterface $formFactory)
     {
@@ -75,12 +75,12 @@ class ItemHandler implements ItemHandlerInterface
 
     public function setLocale($locale)
     {
-        $this->_locale = $locale;
+        $this->locale = $locale;
     }
 
     public function getLocale()
     {
-        return $this->_locale;
+        return $this->locale;
     }
 
     /**
@@ -111,17 +111,17 @@ class ItemHandler implements ItemHandlerInterface
         return $this->repository->find($id);
     }
 
-	/**
-	 * Get list of Item by criteria.
-	 *
-	 * @param array $criteria
-	 *
-	 * @param array $orderBy
-	 * @param int $limit
-	 * @param int $offset
+    /**
+     * Get list of Item by criteria.
      *
-	 * @return array
-	 */
+     * @param array $criteria
+     *
+     * @param array $orderBy
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return array
+     */
     public function getBy(array $criteria, array $orderBy = null, $limit = 1, $offset = 0)
     {
         return $this->repository->findBy($criteria, $orderBy, $limit, $offset);

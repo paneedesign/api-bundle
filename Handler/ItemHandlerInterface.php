@@ -8,7 +8,6 @@
 
 namespace PaneeDesign\ApiBundle\Handler;
 
-
 interface ItemHandlerInterface
 {
     /**
