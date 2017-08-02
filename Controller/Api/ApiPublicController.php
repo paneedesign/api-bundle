@@ -30,7 +30,7 @@ class ApiPublicController extends FOSRestController
     /**
      * @var string
      */
-    protected $_locale;
+    protected $locale;
 
     public function setContainer(ContainerInterface $container = null)
     {
@@ -43,7 +43,7 @@ class ApiPublicController extends FOSRestController
             $locale = $request->headers->get('_locale');
         }
 
-        $this->_locale = $locale;
+        $this->locale = $locale;
     }
 
     /**
@@ -92,15 +92,15 @@ class ApiPublicController extends FOSRestController
 
                 $session->set('access_token', $accessToken);
 
-                $toReturn = ApiHelper::successResponse(array(
+                $toReturn = ApiHelper::successResponse([
                     'access_token' => $accessToken,
                     'id'           => $user->getId()
-                ));
+                ]);
             } else {
                 throw new AuthenticationException();
             }
         } catch (\Exception $e) {
-            $message  = $this->translate('api.shared.error_refresh_token', array(), null, $this->_locale);
+            $message  = $this->translate('api.shared.error_refresh_token', array(), null, $this->locale);
             throw new JsonException($message, Response::HTTP_UNAUTHORIZED);
         }
 
@@ -117,7 +117,7 @@ class ApiPublicController extends FOSRestController
             $request->headers->set('Authorization', $headers['Authorization']);
         }
 
-        if($accessToken === null || $accessToken === '') {
+        if ($accessToken === null || $accessToken === '') {
             $accessToken = $request->headers->get('Authorization');
             $accessToken = trim(str_replace('Bearer', '', $accessToken));
         }
