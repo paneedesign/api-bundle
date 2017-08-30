@@ -104,7 +104,7 @@ class ApiPublicController extends FOSRestController
         } catch (JsonException $jsonException) {
             $message = $this->translate(
                 'api.token.expired_hours_exception',
-                ['expirePeriod' => $expireHours],
+                ['%expirePeriod%' => $expireHours],
                 null,
                 $this->locale
             );
@@ -118,7 +118,7 @@ class ApiPublicController extends FOSRestController
         } catch (\Exception $exception) {
             $message = $this->translate(
                 'api.token.refresh_exception',
-                ['exception' => $exception->getMessage()],
+                ['%exception%' => $exception->getMessage()],
                 null,
                 $this->locale
             );
