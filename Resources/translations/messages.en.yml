@@ -1,3 +1,5 @@
 api:
-    shared:
-        error_refresh_token: Unable to refresh access token!
+    token:
+        refresh_exception:       "Unable to refresh access token! Exception: %exception%"
+        expired_days_exception:  "The token has expired by more than %expirePeriod% days. Please login to get a new token."
+        expired_hours_exception: "The token has expired by more than %expirePeriod% hours. Please login to get a new token."

@@ -4,6 +4,7 @@ namespace PaneeDesign\ApiBundle\Controller\Api;
 
 use FOS\RestBundle\Controller\FOSRestController;
 
+use PaneeDesign\ApiBundle\Exception\JsonException;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
 
@@ -68,13 +69,14 @@ class ApiPublicController extends FOSRestController
      * @Annotations\Post("/publics/tokens/refresh")
      *
      * @param Request $request
-     * @return array|null|\Symfony\Component\HttpFoundation\JsonResponse
+     * @return Response
      */
     public function refreshTokenAction(Request $request)
     {
         $session     = $request->getSession();
         $accessToken = $this->getAccessToken($request);
         $toReturn    = null;
+        $expireHours = 6;
 
         try {
             if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -88,7 +90,7 @@ class ApiPublicController extends FOSRestController
 
                 /* @var TokenManager $tokenManager */
                 $tokenManager = $this->container->get('ped_api.access_token_manager.default');
-                $accessToken  = $tokenManager->getApiKeyAccessToken($user, $accessToken);
+                $accessToken  = $tokenManager->getApiKeyAccessToken($user, $accessToken, $expireHours);
 
                 $session->set('access_token', $accessToken);
 
@@ -99,9 +101,34 @@ class ApiPublicController extends FOSRestController
             } else {
                 throw new AuthenticationException();
             }
-        } catch (\Exception $e) {
-            $message = $this->translate('api.shared.error_refresh_token', array(), null, $this->locale);
-            ApiHelper::errorResponse(Response::HTTP_UNAUTHORIZED, $message);
+        } catch (JsonException $jsonException) {
+            $message = $this->translate(
+                'api.token.expired_hours_exception',
+                ['expirePeriod' => $expireHours],
+                null,
+                $this->locale
+            );
+
+            $toReturn = ApiHelper::customResponse(
+                Response::HTTP_UNAUTHORIZED,
+                1401,
+                'token_expired',
+                $message
+            );
+        } catch (\Exception $exception) {
+            $message = $this->translate(
+                'api.token.refresh_exception',
+                ['exception' => $exception->getMessage()],
+                null,
+                $this->locale
+            );
+
+            $toReturn = ApiHelper::customResponse(
+                Response::HTTP_SERVICE_UNAVAILABLE,
+                1503,
+                'token_exception',
+                $message
+            );
         }
 
         return $toReturn;

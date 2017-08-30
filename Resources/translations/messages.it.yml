@@ -1,3 +1,5 @@
 api:
-    shared:
-        error_refresh_token: Impossibile fare il refresh dell'access token!
+    token:
+        refresh_exception:       "Impossibile fare il refresh dell'access token! Exception: %exception%"
+        expired_days_exception:  "Il token è scaduto da più di %expirePeriod% giorni. Per favore effettua il login per ottenere un nuovo token."
+        expired_hours_exception: "Il token è scaduto da più di %expirePeriod% ore. Per favore effettua il login per ottenere un nuovo token."

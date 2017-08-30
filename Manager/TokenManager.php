@@ -67,7 +67,7 @@ class TokenManager extends FOSTokenManager
         return $accessToken;
     }
 
-    public function getApiKeyAccessToken(User $user, $lastAccessToken = null)
+    public function getApiKeyAccessToken(User $user, $lastAccessToken = null, $expireHours = self::EXPIRE_HOURS)
     {
         $grantApiKey = $this->container->getParameter('api_grant_url');
 
@@ -78,9 +78,7 @@ class TokenManager extends FOSTokenManager
             ];
 
             /* @var TokenInterface $token */
-            $token = $this->findTokenBy($params);
-
-            $expireHours = self::EXPIRE_HOURS;
+            $token     = $this->findTokenBy($params);
             $timeLimit = new \DateTime("-$expireHours hours");
 
             if ($token->getExpiresAt() < $timeLimit->getTimestamp()) {
