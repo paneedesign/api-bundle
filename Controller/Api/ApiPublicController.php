@@ -4,15 +4,14 @@ namespace PaneeDesign\ApiBundle\Controller\Api;
 
 use FOS\RestBundle\Controller\FOSRestController;
 
-use PaneeDesign\ApiBundle\Exception\JsonException;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 use /** @noinspection PhpUnusedAliasInspection */ FOS\RestBundle\Controller\Annotations;
 use /** @noinspection PhpUnusedAliasInspection */ Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -69,18 +68,19 @@ class ApiPublicController extends FOSRestController
      * @Annotations\Post("/publics/tokens/refresh")
      *
      * @param Request $request
-     * @return array|JsonResponse
-     * @throws JsonException
+     * @return array|null|\Symfony\Component\HttpFoundation\JsonResponse
      */
     public function refreshTokenAction(Request $request)
     {
         $session     = $request->getSession();
         $accessToken = $this->getAccessToken($request);
+        $toReturn    = null;
 
         try {
             if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-                $user = $this->get('security.token_storage')
-                    ->getToken()->getUser();
+                /* @var TokenInterface $token */
+                $token = $this->get('security.token_storage')->getToken();
+                $user  = $token->getUser();
 
                 if ($user == null) {
                     throw new AuthenticationException();
@@ -100,8 +100,8 @@ class ApiPublicController extends FOSRestController
                 throw new AuthenticationException();
             }
         } catch (\Exception $e) {
-            $message  = $this->translate('api.shared.error_refresh_token', array(), null, $this->locale);
-            throw new JsonException($message, Response::HTTP_UNAUTHORIZED);
+            $message = $this->translate('api.shared.error_refresh_token', array(), null, $this->locale);
+            ApiHelper::errorResponse(Response::HTTP_UNAUTHORIZED, $message);
         }
 
         return $toReturn;
@@ -109,7 +109,7 @@ class ApiPublicController extends FOSRestController
 
     protected function getAccessToken(Request $request)
     {
-        $accessToken = $request->query->get('access_token');
+        $accessToken = $request->request->get('access_token');
         $accessToken = trim(str_replace('Bearer', '', $accessToken));
         $headers     = function_exists('getallheaders') ? getallheaders() : null;
 
