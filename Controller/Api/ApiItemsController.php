@@ -381,7 +381,7 @@ abstract class ApiItemsController extends FOSRestController
      */
     protected function getPagination($apiName, $count, $limit = 5, $offset = 0, $extraParams = [])
     {
-        $pages   = floor($count / $limit);
+        $pages   = ceil($count / $limit);
         $page    = 1 + floor($offset / $limit);
         $nextUrl = null;
         $prevUrl = null;
