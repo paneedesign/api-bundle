@@ -40,7 +40,7 @@ abstract class ApiItemsController extends FOSRestController
 
         $accessToken = $this->getAccessToken($request);
 
-        if($locale === null) {
+        if ($locale === null) {
             $locale = $request->headers->get('_locale');
         }
 
@@ -73,8 +73,19 @@ abstract class ApiItemsController extends FOSRestController
      *   views = { "items", "default" }
      * )
      *
-     * @Annotations\QueryParam(name="offset", requirements="\d+", strict=true, default=0, description="Offset from which to start listing items.")
-     * @Annotations\QueryParam(name="limit",  requirements="\d+", strict=true, default=5, description="How many items to return.")
+     * @Annotations\QueryParam(
+     *     name="offset",
+     *     requirements="\d+",
+     *     strict=true,
+     *     default=0,
+     *     description="Offset from which to start listing items."
+     * )
+     * @Annotations\QueryParam(
+     *     name="limit",
+     *     requirements="\d+",
+     *     strict=true,
+     *     default=5,
+     *     description="How many items to return.")
      *
      * @param ParamFetcherInterface $paramFetcher param fetcher service
      *
@@ -190,7 +201,8 @@ abstract class ApiItemsController extends FOSRestController
      *
      * @return boolean
      */
-    public function deleteAction($id) {
+    public function deleteAction($id)
+    {
         return $this->getHandler()->delete($id);
     }
 
@@ -279,7 +291,7 @@ abstract class ApiItemsController extends FOSRestController
         $tokenManager = $this->container->get('fos_oauth_server.access_token_manager.default');
         $accessToken  = $tokenManager->findTokenByToken($accessToken);
 
-        if($accessToken === null) {
+        if ($accessToken === null) {
             $user = null;
         } else {
             /* @var User $user */
@@ -301,7 +313,7 @@ abstract class ApiItemsController extends FOSRestController
     protected function getOr404($id)
     {
         if (!($item = $this->handler->get($id))) {
-            throw new NotFoundHttpException(sprintf('The resource \'%s\' was not found.',$id));
+            throw new NotFoundHttpException(sprintf('The resource \'%s\' was not found.', $id));
         }
 
         return $item;
@@ -331,7 +343,7 @@ abstract class ApiItemsController extends FOSRestController
         $offset  = $paramFetcher->get('offset');
         $limit   = $paramFetcher->get('limit');
 
-        if (empty($limit)){
+        if (empty($limit)) {
             $limit = null;
         }
 
@@ -348,11 +360,47 @@ abstract class ApiItemsController extends FOSRestController
             $request->headers->set('Authorization', $headers['Authorization']);
         }
 
-        if($accessToken === null || $accessToken === '') {
+        if ($accessToken === null || $accessToken === '') {
             $accessToken = $request->headers->get('Authorization');
             $accessToken = trim(str_replace('Bearer', '', $accessToken));
         }
 
         return $accessToken;
+    }
+
+    /**
+     * Get Pagination of collection
+     *
+     * @param string $apiName
+     * @param int $count
+     * @param int $limit
+     * @param int $offset
+     * @param array $extraParams
+     *
+     * @return array
+     */
+    protected function getPagination($apiName, $count, $limit = 5, $offset = 0, $extraParams = [])
+    {
+        $pages   = floor($count / $limit);
+        $page    = 1 + floor($offset / $limit);
+        $nextUrl = null;
+        $prevUrl = null;
+
+        if ($limit + $offset < $count) {
+            $nextParams = array_merge($extraParams, ['limit' => $limit, 'offset' => $limit + $offset]);
+            $nextUrl = $this->generateUrl($apiName, $nextParams);
+        }
+
+        if ($offset - $limit > -1) {
+            $prevParams = array_merge($extraParams, ['limit' => $limit, 'offset' => $offset - $limit]);
+            $prevUrl = $this->generateUrl($apiName, $prevParams);
+        }
+
+        return [
+            'page'  => $page,
+            'pages' => $pages,
+            'next'  => $nextUrl,
+            'prev'  => $prevUrl,
+        ];
     }
 }

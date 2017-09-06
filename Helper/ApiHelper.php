@@ -55,11 +55,24 @@ class ApiHelper
      * Success Response
      *
      * @param string|array $data
-     * @return null
+     * @param integer $count
+     * @param array $pagination
+     *
+     * @return array
      */
-    public static function successResponse($data = null)
+    public static function successResponse($data = null, $count = null, $pagination = [])
     {
-        return $data;
+        $toReturn = $data;
+
+        if ($count !== null) {
+            $toReturn = [
+                'data'       => $data,
+                'count'      => (int) $count,
+                'pagination' => $pagination
+            ];
+        }
+
+        return $toReturn;
     }
 
     /**
