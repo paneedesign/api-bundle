@@ -1,5 +1,5 @@
 {
-    "name": "pane-e-design/api-bundle",
+    "name": "paneedesign/api-bundle",
     "type": "symfony-bundle",
     "description": "Api management for Symfony3 projects.",
     "keywords": ["api", "oauth", "php"],
