@@ -10,6 +10,7 @@ services:
     ped_api.item_handler:
         class: "%ped_api.item_handler.class%"
         arguments: ["@doctrine.orm.entity_manager", "@service_container", "@form.factory"]
+        public: true
     ped_api.api_key_grant:
         class: "%ped_api.api_key_grant.class%"
         arguments: ["@doctrine.orm.entity_manager", "%ped_api.oauth2_user_entity.class%"]
