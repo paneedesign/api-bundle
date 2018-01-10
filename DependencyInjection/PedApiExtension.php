@@ -22,7 +22,60 @@ class PedApiExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
+        if (array_key_exists('host', $config) === false) {
+            $this->printException('ped_api.host', ($config['key']));
+        }
+
+        $container->setParameter('ped_api.host', $config['host']);
+
+        if (array_key_exists('type', $config) === true) {
+            $container->setParameter('ped_api.type', $config['type']);
+        }
+
+        if (array_key_exists('client', $config) === true) {
+            $client = $config['client'];
+
+            if (array_key_exists('id', $client) === false) {
+                $this->printException('ped_api.client.id');
+            }
+
+            $container->setParameter('ped_api.client.id', $client['id']);
+
+            if (array_key_exists('secret', $client) === false) {
+                $this->printException('ped_api.client.secret');
+            }
+
+            $container->setParameter('ped_api.client.secret', $client['secret']);
+        }
+
+        if (array_key_exists('access_token', $config) === true) {
+            $accessToken = $config['access_token'];
+
+            if (array_key_exists('expire_at', $accessToken) === false) {
+                $this->printException('ped_api.access_token.expire_at');
+            }
+
+            $container->setParameter('ped_api.access_token.expire_at', $accessToken['expire_at']);
+        }
+
+        if (array_key_exists('refresh_token', $config) === true) {
+            $refreshToken = $config['refresh_token'];
+
+            if (array_key_exists('expire_at', $refreshToken) === false) {
+                $this->printException('ped_api.refresh_token.expire_at');
+            }
+
+            $container->setParameter('ped_api.refresh_token.expire_at', $refreshToken['expire_at']);
+        }
+
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+    }
+
+    private function printException($name, $toPrint = true)
+    {
+        if ($toPrint) {
+            throw new \InvalidArgumentException(sprintf('The option "%s" must be set.', $name));
+        }
     }
 }

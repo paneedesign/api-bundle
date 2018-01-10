@@ -25,8 +25,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TokenManager extends FOSTokenManager
 {
-    const EXPIRE_HOURS = 6;
-
     protected $container;
 
     public function __construct(ContainerInterface $container, EntityManager $em, $class)
@@ -40,19 +38,18 @@ class TokenManager extends FOSTokenManager
      * @param User $user
      * @param $password
      * @return mixed|string
+     * @throws \Exception
      */
     public function getAccessToken(User $user, $password)
     {
         $token = $this->findTokenBy(['user' => $user->getId()]);
 
         if ($token === null) {
-            $client = $this->createClient(
-                [
-                    OAuth2::GRANT_TYPE_USER_CREDENTIALS,
-                    OAuth2::GRANT_TYPE_REFRESH_TOKEN,
-                    OAuth2::GRANT_TYPE_IMPLICIT,
-                ]
-            );
+            $client = $this->createClient([
+                OAuth2::GRANT_TYPE_USER_CREDENTIALS,
+                OAuth2::GRANT_TYPE_REFRESH_TOKEN,
+                OAuth2::GRANT_TYPE_IMPLICIT,
+            ]);
 
             $accessToken = $this->getAccessTokenByClient($user, $password, $client);
         } elseif ($token->hasExpired()) {
@@ -67,9 +64,20 @@ class TokenManager extends FOSTokenManager
         return $accessToken;
     }
 
-    public function getApiKeyAccessToken(User $user, $lastAccessToken = null, $expireHours = self::EXPIRE_HOURS)
+    /**
+     * @param User $user
+     * @param string $lastAccessToken
+     *
+     * @return mixed
+     * @throws JsonException
+     * @throws \Exception
+     */
+    public function getApiKeyAccessToken(User $user, $lastAccessToken = null)
     {
-        $grantApiKey = $this->container->getParameter('api_grant_url');
+        $grantApiKey = $this->container->getParameter('ped_api.oauth.grant_url');
+
+        $accessTokenExprireAt  = $this->getTimestamp('ped_api.access_token.expire_at', '-');
+        $refreshTokenExprireAt = $this->getTimestamp('ped_api.refresh_token.expire_at');
 
         if ($lastAccessToken !== null && $lastAccessToken !== '') {
             $params = [
@@ -79,7 +87,7 @@ class TokenManager extends FOSTokenManager
 
             /* @var TokenInterface $token */
             $token     = $this->findTokenBy($params);
-            $timeLimit = new \DateTime("-$expireHours hours");
+            $timeLimit = new \DateTime($accessTokenExprireAt);
 
             if ($token->getExpiresAt() < $timeLimit->getTimestamp()) {
                 $this->removeToken($user, $lastAccessToken);
@@ -87,7 +95,7 @@ class TokenManager extends FOSTokenManager
                 throw new JsonException('TokenExpired');
             } else {
                 if ($token->hasExpired()) {
-                    $now = new \DateTime('+1 hour');
+                    $now = new \DateTime($refreshTokenExprireAt);
                     $token->setExpiresAt($now->getTimestamp());
 
                     $refreshTokenManager = $this->container->get('fos_oauth_server.refresh_token_manager.default');
@@ -234,5 +242,28 @@ class TokenManager extends FOSTokenManager
         throw new \Exception(
             sprintf('Unable to obtain Access Token. Response from the Server: %s ', var_export($response))
         );
+    }
+
+    /**
+     * @param string $param
+     * @param string $sign
+     * @param string $unit
+     *
+     * @return \DateTime
+     */
+    private function getTimestamp($param, $sign = '+', $unit = 'hours')
+    {
+        $expireAt = $this->container->getParameter($param);
+
+        if (is_numeric($expireAt)) {
+            $toProcess = sprintf('%s%s %s', $sign, $expireAt, $unit);
+        } else {
+            $expireAt = str_replace(['+', '-'], '', $expireAt);
+            $toProcess = sprintf('%s%s', $sign, $expireAt);
+        }
+
+        $toReturn = new \DateTime($toProcess);
+
+        return $toReturn;
     }
 }

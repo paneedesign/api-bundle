@@ -158,6 +158,7 @@ class ItemHandler implements ItemHandlerInterface
      * @param array $parameters
      *
      * @return object
+     * @throws \Exception
      */
     public function post(array $parameters)
     {
@@ -186,6 +187,7 @@ class ItemHandler implements ItemHandlerInterface
      * @param array $parameters
      *
      * @return object
+     * @throws \Exception
      */
     public function put($id, array $parameters)
     {
@@ -205,6 +207,7 @@ class ItemHandler implements ItemHandlerInterface
      * @param array $parameters
      *
      * @return object
+     * @throws \Exception
      */
     public function patch($id, array $parameters)
     {

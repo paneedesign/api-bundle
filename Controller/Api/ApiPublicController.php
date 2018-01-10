@@ -76,7 +76,7 @@ class ApiPublicController extends FOSRestController
         $session     = $request->getSession();
         $accessToken = $this->getAccessToken($request);
         $toReturn    = null;
-        $expireHours = 6;
+        $expiredAt   = $this->container->getParameter('ped_api.access_token.expire_at');
 
         try {
             if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -90,7 +90,7 @@ class ApiPublicController extends FOSRestController
 
                 /* @var TokenManager $tokenManager */
                 $tokenManager = $this->container->get('ped_api.access_token_manager.default');
-                $accessToken  = $tokenManager->getApiKeyAccessToken($user, $accessToken, $expireHours);
+                $accessToken  = $tokenManager->getApiKeyAccessToken($user, $accessToken);
 
                 $session->set('access_token', $accessToken);
 
@@ -103,8 +103,8 @@ class ApiPublicController extends FOSRestController
             }
         } catch (JsonException $jsonException) {
             $message = $this->translate(
-                'api.token.expired_hours_exception',
-                ['%expirePeriod%' => $expireHours],
+                'api.token.expired_exception',
+                ['%expirePeriod%' => $expiredAt],
                 null,
                 $this->locale
             );

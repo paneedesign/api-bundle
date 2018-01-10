@@ -31,7 +31,7 @@ class AuthController extends Controller
     {
         /* @var Client $client */
         $client   = $this->container->get('ped_api.client.authorize_client');
-        $fetchUrl = $this->container->getParameter('api_fetch_url');
+        $fetchUrl = $this->container->getParameter('ped_api.oauth.authorization_url');
 
         if (!$request->query->get('code')) {
             return new RedirectResponse($client->getAuthenticationUrl());

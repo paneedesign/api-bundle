@@ -8,7 +8,6 @@
 
 namespace PaneeDesign\ApiBundle\Exception;
 
-
 class InvalidFormException extends \RuntimeException
 {
     protected $form;

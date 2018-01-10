@@ -1,3 +1,14 @@
+ped_api:
+    host: "%api_server_host"
+    type: "%api_type%"
+    client:
+        id: ~
+        secret: ~
+    access_token:
+        expire_at: "%api_access_token_expire_at%"
+    refresh_token:
+        expire_at: "%api_refresh_token_expire_at%"
+
 fos_oauth_server:
     db_driver:           orm
     client_class:        PaneeDesign\ApiBundle\Entity\Client

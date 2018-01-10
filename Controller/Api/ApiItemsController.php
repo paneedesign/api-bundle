@@ -124,6 +124,7 @@ abstract class ApiItemsController extends FOSRestController
      * @param Request $request the request object
      *
      * @return object
+     * @throws \Exception
      */
     public function postAction(Request $request)
     {
@@ -160,11 +161,12 @@ abstract class ApiItemsController extends FOSRestController
      * )
      *
      * @param Request $request the request object
-     * @param int     $id      the item id
+     * @param int $id the item id
      *
      * @return object
      *
      * @throws NotFoundHttpException when item not exist
+     * @throws \Exception
      */
     public function patchAction(Request $request, $id)
     {

@@ -29,10 +29,18 @@ class Client
         $this->params        = $params;
     }
 
-    public function getAuthenticationUrl() {
+    /**
+     * @return mixed
+     */
+    public function getAuthenticationUrl()
+    {
         return $this->client->getAuthenticationUrl($this->authEndpoint, $this->redirectUrl);
     }
 
+    /**
+     * @param string $code
+     * @return mixed
+     */
     public function getAccessToken($code = null)
     {
         if ($code !== null) {
@@ -41,7 +49,7 @@ class Client
 
         $response = $this->client->getAccessToken($this->tokenEndpoint, $this->grant, $this->params);
 
-        if(isset($response['result']) && isset($response['result']['access_token'])) {
+        if (isset($response['result']) && isset($response['result']['access_token'])) {
             $accessToken = $response['result']['access_token'];
             $this->client->setAccessToken($accessToken);
             return $accessToken;
@@ -50,6 +58,10 @@ class Client
         throw new AdoyOAuth2\Exception(sprintf('Unable to obtain Access Token. Response from the Server: %s ', var_export($response)));
     }
 
+    /**
+     * @param string $url
+     * @return mixed
+     */
     public function fetch($url)
     {
         return $this->client->fetch($url);

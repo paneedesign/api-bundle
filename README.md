@@ -22,7 +22,7 @@ Pane&Design repository is private so, add to `composer.json` this `vcs`
     ...
     "require": {
         ...
-        "paneedesign/api-bundle": "^1.0"   
+        "paneedesign/api-bundle": "^2.0"   
     }
 ```
 
@@ -81,14 +81,10 @@ Add parameters
 // app/config/parameters.yml.dist
 parameters:
     ...
-    api_server_host:         'https://api.paneedesign.com'
-    api_type:                oauth2
-    api_client_id:           <client_id>
-    api_client_secret:       <client_secret>
-    api_grant_url:           '%api_server_host%/oauth/v2/api_key'
-    api_access_token_url:    '%api_server_host%/oauth/v2/token'
-    api_authorization_url:   '%api_server_host%/oauth/v2/authorize'
-    api_infos_url:           '%api_server_host%/api/user'
+    api_server_host:              'https://api.paneedesign.com'
+    api_type:                     oauth2
+    api_access_token_expire_at:   ~
+    api_refresh_token_expire_at:  ~
 ```
 
 Add configuration

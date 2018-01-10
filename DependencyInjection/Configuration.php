@@ -20,9 +20,33 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('ped_api');
 
-        // Here you should define the parameters that are allowed to
-        // configure your bundle. See the documentation linked above for
-        // more information on that topic.
+        $rootNode
+            ->children()
+                ->scalarNode('host')->end()
+                ->scalarNode('type')->defaultValue('oauth2')->end()
+                ->arrayNode('client')
+                    ->addDefaultsIfNotSet()
+                    ->canBeUnset()
+                    ->children()
+                        ->scalarNode('id')->defaultValue('')->end()
+                        ->scalarNode('secret')->defaultValue('')->end()
+                    ->end()
+                ->end()
+                ->arrayNode('access_token')
+                    ->addDefaultsIfNotSet()
+                    ->canBeUnset()
+                    ->children()
+                        ->scalarNode('expire_at')->defaultValue('+6 hour')->end()
+                    ->end()
+                ->end()
+                ->arrayNode('refresh_token')
+                    ->addDefaultsIfNotSet()
+                    ->canBeUnset()
+                    ->children()
+                        ->scalarNode('expire_at')->defaultValue('+1 hour')->end()
+                    ->end()
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }
