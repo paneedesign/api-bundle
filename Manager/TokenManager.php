@@ -86,17 +86,15 @@ class TokenManager extends FOSTokenManager
             ];
 
             /* @var TokenInterface $token */
-            $token     = $this->findTokenBy($params);
-            $timeLimit = new \DateTime($accessTokenExprireAt);
+            $token = $this->findTokenBy($params);
 
-            if ($token->getExpiresAt() < $timeLimit->getTimestamp()) {
+            if ($token->getExpiresAt() < $accessTokenExprireAt->getTimestamp()) {
                 $this->removeToken($user, $lastAccessToken);
 
                 throw new JsonException('TokenExpired');
             } else {
                 if ($token->hasExpired()) {
-                    $now = new \DateTime($refreshTokenExprireAt);
-                    $token->setExpiresAt($now->getTimestamp());
+                    $token->setExpiresAt($refreshTokenExprireAt->getTimestamp());
 
                     $refreshTokenManager = $this->container->get('fos_oauth_server.refresh_token_manager.default');
                     $refreshTokenManager->updateToken($token);

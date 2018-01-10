@@ -7,12 +7,12 @@ use FOS\RestBundle\Controller\FOSRestController;
 use PaneeDesign\ApiBundle\Exception\JsonException;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
+use PaneeDesign\UserBundle\Entity\User;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 use /** @noinspection PhpUnusedAliasInspection */ FOS\RestBundle\Controller\Annotations;
 use /** @noinspection PhpUnusedAliasInspection */ Nelmio\ApiDocBundle\Annotation\ApiDoc;
@@ -79,57 +79,74 @@ class ApiPublicController extends FOSRestController
         $expiredAt   = $this->container->getParameter('ped_api.access_token.expire_at');
 
         try {
-            if ($this->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-                /* @var TokenInterface $token */
-                $token = $this->get('security.token_storage')->getToken();
-                $user  = $token->getUser();
+            $user = $this->getMe($accessToken);
 
-                if ($user == null) {
-                    throw new AuthenticationException();
-                }
-
-                /* @var TokenManager $tokenManager */
-                $tokenManager = $this->container->get('ped_api.access_token_manager.default');
-                $accessToken  = $tokenManager->getApiKeyAccessToken($user, $accessToken);
-
-                $session->set('access_token', $accessToken);
-
-                $toReturn = ApiHelper::successResponse([
-                    'access_token' => $accessToken,
-                    'id'           => $user->getId()
-                ]);
-            } else {
+            if ($user == null) {
                 throw new AuthenticationException();
             }
+
+            /* @var TokenManager $tokenManager */
+            $tokenManager = $this->container->get('ped_api.access_token_manager.default');
+            $accessToken  = $tokenManager->getApiKeyAccessToken($user, $accessToken);
+
+            $session->set('access_token', $accessToken);
+
+            $toReturn = ApiHelper::successResponse([
+                'access_token' => $accessToken,
+                'id'           => $user->getId()
+            ]);
         } catch (JsonException $jsonException) {
-            $message = $this->translate(
-                'api.token.expired_exception',
-                ['%expirePeriod%' => $expiredAt],
-                null,
-                $this->locale
-            );
-
-            $toReturn = ApiHelper::customResponse(
-                Response::HTTP_UNAUTHORIZED,
-                1401,
-                'token_expired',
-                $message
-            );
+            $toReturn = $this->throwRefreshTokenJsonException($jsonException, $expiredAt);
         } catch (\Exception $exception) {
-            $message = $this->translate(
-                'api.token.refresh_exception',
-                ['%exception%' => $exception->getMessage()],
-                null,
-                $this->locale
-            );
-
-            $toReturn = ApiHelper::customResponse(
-                Response::HTTP_SERVICE_UNAVAILABLE,
-                1503,
-                'token_exception',
-                $message
-            );
+            $toReturn = $this->throwRefreshTokenException($exception);
         }
+
+        return $toReturn;
+    }
+
+    /**
+     * @param JsonException $jsonException
+     * @param $expiredAt
+     * @return Response
+     */
+    protected function throwRefreshTokenJsonException(JsonException $jsonException, $expiredAt)
+    {
+        $message = $this->translate(
+            'api.token.expired_exception',
+            ['%expirePeriod%' => $expiredAt],
+            null,
+            $this->locale
+        );
+
+        $toReturn = ApiHelper::customResponse(
+            Response::HTTP_UNAUTHORIZED,
+            1401,
+            'token_expired',
+            $message
+        );
+
+        return $toReturn;
+    }
+
+    /**
+     * @param \Exception $exception
+     * @return Response
+     */
+    protected function throwRefreshTokenException(\Exception $exception)
+    {
+        $message = $this->translate(
+            'api.token.refresh_exception',
+            ['%exception%' => $exception->getMessage()],
+            null,
+            $this->locale
+        );
+
+        $toReturn = ApiHelper::customResponse(
+            Response::HTTP_SERVICE_UNAVAILABLE,
+            1503,
+            'token_exception',
+            $message
+        );
 
         return $toReturn;
     }
@@ -169,5 +186,24 @@ class ApiPublicController extends FOSRestController
         $translator = $this->get('translator');
 
         return $translator->trans($id, $parameters, $domain, $locale);
+    }
+
+    /**
+     * @param string $accessToken
+     *
+     * @return User
+     */
+    protected function getMe($accessToken)
+    {
+        $tokenManager = $this->container->get('fos_oauth_server.access_token_manager.default');
+        $accessToken = $tokenManager->findTokenByToken($accessToken);
+
+        if ($accessToken === null) {
+            $user = null;
+        } else {
+            $user = $accessToken->getUser();
+        }
+
+        return $user;
     }
 }
