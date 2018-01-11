@@ -49,22 +49,15 @@ class ApiPublicController extends FOSRestController
     /**
      * Refresh given token
      *
-     * @ApiDoc(
-     *   section = "Public",
-     *   resource = true,
-     *   requirements = {
-     *      {
-     *          "name" = "access_token",
-     *          "dataType" = "string",
-     *          "requirement" = "[a-zA-Z0-9]+",
-     *          "description" = "OAuth2 Access Token to allow call"
-     *      }
-     *   },
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   },
-     *   views = { "public", "default" }
+     * @Operation(
+     *     tags={"Public"},
+     *     summary="Refresh given token",
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Returned when successful"
+     *     )
      * )
+     *
      *
      * @Annotations\Post("/publics/tokens/refresh")
      *

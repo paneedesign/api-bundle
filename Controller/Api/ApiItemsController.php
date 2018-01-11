@@ -57,21 +57,29 @@ abstract class ApiItemsController extends FOSRestController
     /**
      * List all items.
      *
-     * @ApiDoc(
-     *   resource = true,
-     *   requirements = {
-     *      {
-     *          "name" = "access_token",
-     *          "dataType" = "string",
-     *          "requirement" = "[a-zA-Z0-9]+",
-     *          "description" = "OAuth2 Access Token to allow call"
-     *      }
-     *   },
-     *   statusCodes = {
-     *     200 = "Returned when successful"
-     *   },
-     *   views = { "items", "default" }
+     * @Operation(
+     *     tags={""},
+     *     summary="List all items.",
+     *     @SWG\Parameter(
+     *         name="offset",
+     *         in="query",
+     *         description="Offset from which to start listing items.",
+     *         required=false,
+     *         type="string"
+     *     ),
+     *     @SWG\Parameter(
+     *         name="limit",
+     *         in="query",
+     *         description="How many items to return.",
+     *         required=false,
+     *         type="string"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Returned when successful"
+     *     )
      * )
+     *
      *
      * @Annotations\QueryParam(
      *     name="offset",
@@ -143,22 +151,19 @@ abstract class ApiItemsController extends FOSRestController
     /**
      * Partially update an Item from the submitted data
      *
-     * @ApiDoc(
-     *   resource = true,
-     *   requirements = {
-     *      {
-     *          "name" = "access_token",
-     *          "dataType" = "string",
-     *          "requirement" = "[a-zA-Z0-9]+",
-     *          "description" = "OAuth2 Access Token to allow call"
-     *      }
-     *   },
-     *   statusCodes = {
-     *     204 = "Returned when successful",
-     *     400 = "Returned when the form has errors"
-     *   },
-     *   views = { "items", "default" }
+     * @Operation(
+     *     tags={""},
+     *     summary="Partially update an Item from the submitted data",
+     *     @SWG\Response(
+     *         response="204",
+     *         description="Returned when successful"
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Returned when the form has errors"
+     *     )
      * )
+     *
      *
      * @param Request $request the request object
      * @param int $id the item id
@@ -211,27 +216,23 @@ abstract class ApiItemsController extends FOSRestController
     /**
      * Get single Item.
      *
-     * @ApiDoc(
-     *   resource = true,
-     *   requirements = {
-     *      {
-     *          "name" = "access_token",
-     *          "dataType" = "string",
-     *          "requirement" = "[a-zA-Z0-9]+",
-     *          "description" = "OAuth2 Access Token to allow call"
-     *      }
-     *   },
-     *   description = "Gets a Item for a given id",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     403 = "Returned when the item is not authorized to say hello",
-     *     404 = {
-     *           "Returned when the item is not found",
-     *           "Returned when something else is not found"
-     *     }
-     *   },
-     *   views = { "items", "default" }
+     * @Operation(
+     *     tags={""},
+     *     summary="Gets a Item for a given id",
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Returned when successful"
+     *     ),
+     *     @SWG\Response(
+     *         response="403",
+     *         description="Returned when the item is not authorized to say hello"
+     *     ),
+     *     @SWG\Response(
+     *         response="404",
+     *         description="Returned when the item is not found"
+     *     )
      * )
+     *
      *
      * @Annotations\View(templateVar="item")
      *
@@ -252,23 +253,26 @@ abstract class ApiItemsController extends FOSRestController
     /**
      * Get number of items.
      *
-     * @ApiDoc(
-     *   resource = true,
-     *   requirements = {
-     *      {
-     *          "name" = "access_token",
-     *          "dataType" = "string",
-     *          "requirement" = "[a-zA-Z0-9]+",
-     *          "description" = "OAuth2 Access Token to allow call"
-     *      }
-     *   },
-     *   description = "Get number of items.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     400 = "Returned when the form has errors"
-     *   },
-     *   views = { "items", "default" }
+     * @Operation(
+     *     tags={""},
+     *     summary="Get number of items.",
+     *     @SWG\Parameter(
+     *         name="filters",
+     *         in="query",
+     *         description="Custom filter object",
+     *         required=false,
+     *         type="string"
+     *     ),
+     *     @SWG\Response(
+     *         response="200",
+     *         description="Returned when successful"
+     *     ),
+     *     @SWG\Response(
+     *         response="400",
+     *         description="Returned when the form has errors"
+     *     )
      * )
+     *
      *
      * @Annotations\QueryParam(name="filters", description="Custom filter object")
      *
