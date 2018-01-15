@@ -4,24 +4,21 @@ nelmio_api_doc:
             title:            Pane&Design API documentation
             description:      API of Pane&Design
             version:          1.0.0
-    exclude_sections:         []
-    default_sections_opened:  true
-    motd:
-        template:             'NelmioApiDocBundle::Components/motd.html.twig'
-    request_listener:
-        enabled:              true
-        parameter:            _doc
-    sandbox:
-        enabled:              true
-        endpoint:             null
-        accept_type:          null
-        body_format: ~
-        request_format: ~
-        authentication:
-            delivery:         query # Required
-            name:             access_token # Required
-            type:             bearer
-        entity_to_choice:     true
-    cache:
-        enabled:              false
-        file:                 '%kernel.cache_dir%/api-doc.cache'
+        securityDefinitions:
+            api_key:
+                type: apiKey
+                in: header
+                name: Authorization
+                description: "The token you got on login action: Bearer TOKEN"
+            #access_token:
+            #   type: oauth2
+            #   in: header
+            #   name: Authorization
+            #   description: The token you got on login action
+            #   flow: implicit
+        security:
+            - api_key: []
+            #- access_token: []
+    routes:
+        path_patterns: # an array of regexps
+            - ^/api(?!/doc)

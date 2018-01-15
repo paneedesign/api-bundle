@@ -13,11 +13,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Request;
 
+use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Request\ParamFetcherInterface;
 
-use /** @noinspection PhpUnusedAliasInspection */ FOS\RestBundle\Controller\Annotations;
-use /** @noinspection PhpUnusedAliasInspection */ Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Swagger\Annotations as SWG;
 
 abstract class ApiItemsController extends FOSRestController
 {
@@ -55,82 +54,142 @@ abstract class ApiItemsController extends FOSRestController
     abstract protected function getHandler();
 
     /**
-     * List all items.
+     * List all Items
      *
-     * @Operation(
-     *     tags={""},
-     *     summary="List all items.",
-     *     @SWG\Parameter(
-     *         name="offset",
-     *         in="query",
-     *         description="Offset from which to start listing items.",
-     *         required=false,
-     *         type="string"
-     *     ),
-     *     @SWG\Parameter(
-     *         name="limit",
-     *         in="query",
-     *         description="How many items to return.",
-     *         required=false,
-     *         type="string"
-     *     ),
-     *     @SWG\Response(
-     *         response="200",
-     *         description="Returned when successful"
+     * @SWG\Parameter(
+     *     in="query",
+     *     type="number",
+     *     minimum="0",
+     *     name="offset",
+     *     description="Offset from which to start listing Items.",
+     *     required=true,
+     *     default="0"
+     * )
+     * @SWG\Parameter(
+     *     in="query",
+     *     type="integer",
+     *     name="limit",
+     *     description="How many Items to return.",
+     *     required=true,
+     *     default="5"
+     * )
+     * @SWG\Response(
+     *     response="200",
+     *     description="Returned when successful",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string"
+     *         )
      *     )
      * )
      *
-     *
-     * @Annotations\QueryParam(
-     *     name="offset",
-     *     requirements="\d+",
-     *     strict=true,
-     *     default=0,
-     *     description="Offset from which to start listing items."
-     * )
-     * @Annotations\QueryParam(
-     *     name="limit",
-     *     requirements="\d+",
-     *     strict=true,
-     *     default=5,
-     *     description="How many items to return.")
-     *
-     * @param ParamFetcherInterface $paramFetcher param fetcher service
-     *
      * @return array
      */
-    public function cgetAction(ParamFetcherInterface $paramFetcher)
+    public function cgetAction(Request $request)
     {
-        $offset = $paramFetcher->get('offset');
-        $limit  = $paramFetcher->get('limit');
+        $offset = $request->query->get('offset');
+        $limit  = $request->query->get('limit');
 
         return $this->handler->all($limit, $offset);
     }
 
+    /**
+     * Get number of Items
+     *
+     * @SWG\Parameter(
+     *     in="query",
+     *     type="array",
+     *     name="filters[]",
+     *     description="Custom filter object",
+     *     required=false,
+     *     collectionFormat="multi",
+     *     @SWG\Items(
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string"
+     *         )
+     *     )
+     * )
+     * @SWG\Response(
+     *     response="200",
+     *     description="Success"
+     * )
+     *
+     * @param Request $request
+     * @return int
+     */
+    public function countAction(Request $request)
+    {
+        $criteria = $request->query->get('filters', false) ?: array();
+
+        return $this->handler->count($criteria);
+    }
 
     /**
-     * Create a Item from the submitted data.
+     * Get single Item
      *
-     * @ApiDoc(
-     *   resource = true,
-     *   requirements = {
-     *      {
-     *          "name" = "access_token",
-     *          "dataType" = "string",
-     *          "requirement" = "[a-zA-Z0-9]+",
-     *          "description" = "OAuth2 Access Token to allow call"
-     *      }
-     *   },
-     *   description = "Creates a new item from the submitted data.",
-     *   statusCodes = {
-     *     200 = "Returned when successful",
-     *     400 = "Returned when the form has errors"
-     *   },
-     *   views = { "items", "default" }
+     * @SWG\Parameter(
+     *     in="path",
+     *     type="integer",
+     *     name="id",
+     *     description="The admin identifier"
+     * )
+     * @SWG\Response(
+     *     response="200",
+     *     description="Returned when successful"
+     * )
+     * @SWG\Response(
+     *     response="403",
+     *     description="Returned when the admin is not authorized to say hello"
+     * )
+     * @SWG\Response(
+     *     response="404",
+     *     description="Returned when the admin is not found"
+     * )
+     *
+     * @param Request $request
+     * @param int $id the Item id
+     * @return object
+     * @throws NotFoundHttpException when Item not exist
+     */
+    public function getAction(Request $request, $id)
+    {
+        $item = $this->getOr404($id);
+
+        return $item;
+    }
+
+    /**
+     * Create a Item
+     *
+     * @SWG\Parameter(
+     *     in="body",
+     *     name="form",
+     *     description="Item parameters",
+     *     @SWG\Items(
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string"
+     *         )
+     *     ),
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string"
+     *         )
+     *     )
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success"
+     * )
+     * @SWG\Response(
+     *     response="400",
+     *     description="Returned when the form has errors"
      * )
      *
      * @param Request $request the request object
-     *
      * @return object
      * @throws \Exception
      */
@@ -151,26 +210,43 @@ abstract class ApiItemsController extends FOSRestController
     /**
      * Partially update an Item from the submitted data
      *
-     * @Operation(
-     *     tags={""},
-     *     summary="Partially update an Item from the submitted data",
-     *     @SWG\Response(
-     *         response="204",
-     *         description="Returned when successful"
+     * @SWG\Parameter(
+     *     in="body",
+     *     name="form",
+     *     description="Item parameters",
+     *     @SWG\Items(
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string"
+     *         )
      *     ),
-     *     @SWG\Response(
-     *         response="400",
-     *         description="Returned when the form has errors"
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string"
+     *         )
      *     )
+     * ),
+     * * @SWG\Parameter(
+     *     in="path",
+     *     type="integer",
+     *     name="id",
+     *     description="The item identifier"
+     * )
+     * @SWG\Response(
+     *     response=200,
+     *     description="Success"
+     * )
+     * @SWG\Response(
+     *     response="400",
+     *     description="Returned when the form has errors"
      * )
      *
-     *
      * @param Request $request the request object
-     * @param int $id the item id
+     * @param int $id the Item id
      *
      * @return object
-     *
-     * @throws NotFoundHttpException when item not exist
+     * @throws NotFoundHttpException when Item not exist
      * @throws \Exception
      */
     public function patchAction(Request $request, $id)
@@ -185,105 +261,30 @@ abstract class ApiItemsController extends FOSRestController
     }
 
     /**
-     * Delete Item from the submitted data
+     * Delete a Item
      *
-     * @ApiDoc(
-     *   resource = true,
-     *   requirements = {
-     *      {
-     *          "name" = "access_token",
-     *          "dataType" = "string",
-     *          "requirement" = "[a-zA-Z0-9]+",
-     *          "description" = "OAuth2 Access Token to allow call"
-     *      }
-     *   },
-     *   statusCodes = {
-     *     204 = "Returned when successful",
-     *     400 = "Returned when the form has errors"
-     *   },
-     *   views = { "items", "default" }
+     * @SWG\Parameter(
+     *     in="path",
+     *     type="integer",
+     *     name="id",
+     *     description="The item identifier"
+     * )
+     * @SWG\Response(
+     *     response="200",
+     *     description="Returned when successful"
+     * )
+     * @SWG\Response(
+     *     response="400",
+     *     description="Returned when the form has errors"
      * )
      *
-     * @param int $id the item id
+     * @param int $id the Item id
      *
      * @return boolean
      */
     public function deleteAction($id)
     {
         return $this->getHandler()->delete($id);
-    }
-
-    /**
-     * Get single Item.
-     *
-     * @Operation(
-     *     tags={""},
-     *     summary="Gets a Item for a given id",
-     *     @SWG\Response(
-     *         response="200",
-     *         description="Returned when successful"
-     *     ),
-     *     @SWG\Response(
-     *         response="403",
-     *         description="Returned when the item is not authorized to say hello"
-     *     ),
-     *     @SWG\Response(
-     *         response="404",
-     *         description="Returned when the item is not found"
-     *     )
-     * )
-     *
-     *
-     * @Annotations\View(templateVar="item")
-     *
-     * @param ParamFetcherInterface $paramFetcher
-     * @param int $id the item id
-     *
-     * @return object
-     *
-     * @throws NotFoundHttpException when item not exist
-     */
-    public function getAction(ParamFetcherInterface $paramFetcher, $id)
-    {
-        $item = $this->getOr404($id);
-
-        return $item;
-    }
-
-    /**
-     * Get number of items.
-     *
-     * @Operation(
-     *     tags={""},
-     *     summary="Get number of items.",
-     *     @SWG\Parameter(
-     *         name="filters",
-     *         in="query",
-     *         description="Custom filter object",
-     *         required=false,
-     *         type="string"
-     *     ),
-     *     @SWG\Response(
-     *         response="200",
-     *         description="Returned when successful"
-     *     ),
-     *     @SWG\Response(
-     *         response="400",
-     *         description="Returned when the form has errors"
-     *     )
-     * )
-     *
-     *
-     * @Annotations\QueryParam(name="filters", description="Custom filter object")
-     *
-     * @param ParamFetcherInterface $paramFetcher
-     * @return int
-     */
-    public function countAction(ParamFetcherInterface $paramFetcher)
-    {
-        $criteria = $paramFetcher->get('filters', false) ?: array();
-
-        return $this->handler->count($criteria);
     }
 
     /**
@@ -310,8 +311,7 @@ abstract class ApiItemsController extends FOSRestController
     /**
      * Fetch a Item or throw an 404 Exception.
      *
-     * @param mixed $id
-     *
+     * @param int $id
      * @return object
      *
      * @throws NotFoundHttpException
@@ -344,10 +344,10 @@ abstract class ApiItemsController extends FOSRestController
         return $translator->trans($id, $parameters, $domain, $locale);
     }
 
-    protected function getBy($criteria, ParamFetcherInterface $paramFetcher, $orderBy = null)
+    protected function getBy($criteria, Request $request, $orderBy = null)
     {
-        $offset  = $paramFetcher->get('offset');
-        $limit   = $paramFetcher->get('limit');
+        $offset  = $request->query->get('offset');
+        $limit   = $request->query->get('limit');
 
         if (empty($limit)) {
             $limit = null;

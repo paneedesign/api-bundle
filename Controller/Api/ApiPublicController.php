@@ -2,6 +2,7 @@
 
 namespace PaneeDesign\ApiBundle\Controller\Api;
 
+use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 
 use PaneeDesign\ApiBundle\Exception\JsonException;
@@ -14,8 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
-use /** @noinspection PhpUnusedAliasInspection */ FOS\RestBundle\Controller\Annotations;
-use /** @noinspection PhpUnusedAliasInspection */ Nelmio\ApiDocBundle\Annotation\ApiDoc;
+use Swagger\Annotations as SWG;
 
 /**
  * @Annotations\RouteResource("Public")
@@ -49,15 +49,22 @@ class ApiPublicController extends FOSRestController
     /**
      * Refresh given token
      *
-     * @Operation(
-     *     tags={"Public"},
-     *     summary="Refresh given token",
-     *     @SWG\Response(
-     *         response="200",
-     *         description="Returned when successful"
-     *     )
+     * @SWG\Tag(name="Public")
+     * @SWG\Parameter(
+     *     name="access_token",
+     *     in="formData",
+     *     required=true,
+     *     type="string",
+     *     description="The token you got on login action"
      * )
-     *
+     * @SWG\Response(
+     *     response="200",
+     *     description="Returned when successful"
+     * )
+     * @SWG\Response(
+     *     response="503",
+     *     description="Unable to refresh access token"
+     * )
      *
      * @Annotations\Post("/publics/tokens/refresh")
      *
@@ -84,10 +91,7 @@ class ApiPublicController extends FOSRestController
 
             $session->set('access_token', $accessToken);
 
-            $toReturn = ApiHelper::successResponse([
-                'access_token' => $accessToken,
-                'id'           => $user->getId()
-            ]);
+            $toReturn = $this->refreshTokenResponse($user, $accessToken);
         } catch (JsonException $jsonException) {
             $toReturn = $this->throwRefreshTokenJsonException($jsonException, $expiredAt);
         } catch (\Exception $exception) {
@@ -95,6 +99,20 @@ class ApiPublicController extends FOSRestController
         }
 
         return $toReturn;
+    }
+
+    /**
+     * @param User $user
+     * @param $accessToken
+     *
+     * @return array
+     */
+    protected function refreshTokenResponse(User $user, $accessToken)
+    {
+        return ApiHelper::successResponse([
+            'access_token' => $accessToken,
+            'id'           => $user->getId()
+        ]);
     }
 
     /**
@@ -144,6 +162,10 @@ class ApiPublicController extends FOSRestController
         return $toReturn;
     }
 
+    /**
+     * @param Request $request
+     * @return array|mixed|string
+     */
     protected function getAccessToken(Request $request)
     {
         $accessToken = $request->request->get('access_token');
