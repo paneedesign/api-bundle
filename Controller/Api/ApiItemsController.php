@@ -387,19 +387,25 @@ abstract class ApiItemsController extends FOSRestController
      */
     protected function getPagination($apiName, $count, $limit = 5, $offset = 0, $extraParams = [])
     {
-        $pages   = ceil($count / $limit);
-        $page    = 1 + floor($offset / $limit);
         $nextUrl = null;
         $prevUrl = null;
 
-        if ($limit + $offset < $count) {
-            $nextParams = array_merge($extraParams, ['limit' => $limit, 'offset' => $limit + $offset]);
-            $nextUrl = $this->generateUrl($apiName, $nextParams);
-        }
+        if ($limit === 0) {
+            $pages = 1;
+            $page  = 1;
+        } else {
+            $pages = ceil($count / $limit);
+            $page  = 1 + floor($offset / $limit);
 
-        if ($offset - $limit > -1) {
-            $prevParams = array_merge($extraParams, ['limit' => $limit, 'offset' => $offset - $limit]);
-            $prevUrl = $this->generateUrl($apiName, $prevParams);
+            if ($limit + $offset < $count) {
+                $nextParams = array_merge($extraParams, ['limit' => $limit, 'offset' => $limit + $offset]);
+                $nextUrl = $this->generateUrl($apiName, $nextParams);
+            }
+
+            if ($offset - $limit > -1) {
+                $prevParams = array_merge($extraParams, ['limit' => $limit, 'offset' => $offset - $limit]);
+                $prevUrl = $this->generateUrl($apiName, $prevParams);
+            }
         }
 
         return [
