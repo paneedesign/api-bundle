@@ -390,7 +390,7 @@ abstract class ApiItemsController extends FOSRestController
         $nextUrl = null;
         $prevUrl = null;
 
-        if ($limit === 0) {
+        if ((int) $limit === 0) {
             $pages = 1;
             $page  = 1;
         } else {
