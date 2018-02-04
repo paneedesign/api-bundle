@@ -22,6 +22,3 @@ nelmio_api_doc:
         security:
             - api_key: []
             #- access_token: []
-    routes:
-        path_patterns: # an array of regexps
-            - ^/api(?!/doc)
