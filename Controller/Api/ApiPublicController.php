@@ -51,11 +51,15 @@ class ApiPublicController extends FOSRestController
      *
      * @SWG\Tag(name="Public")
      * @SWG\Parameter(
-     *     name="access_token",
-     *     in="formData",
-     *     required=true,
-     *     type="string",
-     *     description="The token you got on login action"
+     *     in="body",
+     *     name="form",
+     *     description="Access Token",
+     *     @SWG\Schema(
+     *         required={"access_token"},
+     *         @SWG\Property(
+     *             type="string", property="access_token", description="The token you got on login action"
+     *         )
+     *     )
      * )
      * @SWG\Response(
      *     response="200",
