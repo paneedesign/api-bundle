@@ -87,20 +87,12 @@ class ApiHelper
         throw new JsonException($message, $httpCode);
     }
 
-    public static function timestamp2datetime($sTimestamp)
-    {
-        $toReturn = null;
-
-        if ($sTimestamp !== null) {
-            $date = new \DateTime();
-            $date->setTimestamp($sTimestamp);
-
-            $toReturn = $date->format('Y-m-dTH:i:s');
-        }
-
-        return $toReturn;
-    }
-
+    /**
+     * @param $data
+     * @param bool $deleteEmptyArrays
+     *
+     * @return array
+     */
     public static function formatRequestData($data, $deleteEmptyArrays = false)
     {
         $formattedData = [];

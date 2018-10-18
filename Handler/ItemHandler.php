@@ -115,7 +115,6 @@ class ItemHandler implements ItemHandlerInterface
      * Get list of Item by criteria.
      *
      * @param array $criteria
-     *
      * @param array $orderBy
      * @param int $limit
      * @param int $offset

@@ -32,20 +32,6 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('secret')->defaultValue('')->end()
                     ->end()
                 ->end()
-                ->arrayNode('access_token')
-                    ->addDefaultsIfNotSet()
-                    ->canBeUnset()
-                    ->children()
-                        ->scalarNode('expire_at')->defaultValue('+6 hour')->end()
-                    ->end()
-                ->end()
-                ->arrayNode('refresh_token')
-                    ->addDefaultsIfNotSet()
-                    ->canBeUnset()
-                    ->children()
-                        ->scalarNode('expire_at')->defaultValue('+1 hour')->end()
-                    ->end()
-                ->end()
             ->end();
 
         return $treeBuilder;

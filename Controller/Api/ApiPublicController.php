@@ -5,6 +5,7 @@ namespace PaneeDesign\ApiBundle\Controller\Api;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 
+use OAuth2\OAuth2ServerException;
 use PaneeDesign\ApiBundle\Exception\JsonException;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
@@ -77,10 +78,13 @@ class ApiPublicController extends FOSRestController
      */
     public function refreshTokenAction(Request $request)
     {
-        $session     = $request->getSession();
-        $accessToken = $this->getAccessToken($request);
-        $toReturn    = null;
-        $expiredAt   = $this->container->getParameter('ped_api.access_token.expire_at');
+        $session      = $request->getSession();
+        $accessToken  = $request->get('access_token');
+        $refreshToken = $request->get('refresh_token');
+
+        if ($accessToken === null) {
+            $accessToken = str_replace('Bearer ', '', $request->headers->get('authorization'));
+        }
 
         try {
             $user = $this->getMe($accessToken);
@@ -91,13 +95,17 @@ class ApiPublicController extends FOSRestController
 
             /* @var TokenManager $tokenManager */
             $tokenManager = $this->container->get('ped_api.access_token_manager.default');
-            $accessToken  = $tokenManager->getApiKeyAccessToken($user, $accessToken);
+            $oAuthToken   = $tokenManager->getOAuthToken($user, $refreshToken);
 
-            $session->set('access_token', $accessToken);
+            $session->set('access_token', $oAuthToken['access_token']);
 
-            $toReturn = $this->refreshTokenResponse($user, $accessToken);
-        } catch (JsonException $jsonException) {
-            $toReturn = $this->throwRefreshTokenJsonException($jsonException, $expiredAt);
+            if (array_key_exists('refresh_token', $oAuthToken) === true) {
+                $session->set('refresh_token', $oAuthToken['refresh_token']);
+            }
+            
+            $toReturn = $this->refreshTokenResponse($user, $oAuthToken);
+        } catch (OAuth2ServerException $oAuthException) {
+            $toReturn = $this->throwRefreshTokenJsonException($oAuthException);
         } catch (\Exception $exception) {
             $toReturn = $this->throwRefreshTokenException($exception);
         }
@@ -107,37 +115,30 @@ class ApiPublicController extends FOSRestController
 
     /**
      * @param User $user
-     * @param $accessToken
+     * @param array $oAuthToken
      *
      * @return array
      */
-    protected function refreshTokenResponse(User $user, $accessToken)
+    protected function refreshTokenResponse(User $user, $oAuthToken)
     {
-        return ApiHelper::successResponse([
-            'access_token' => $accessToken,
-            'id'           => $user->getId()
-        ]);
+        return ApiHelper::successResponse(
+            array_merge($oAuthToken, ['id' => $user->getId()])
+        );
     }
 
     /**
      * @param JsonException $jsonException
-     * @param $expiredAt
      * @return Response
      */
-    protected function throwRefreshTokenJsonException(JsonException $jsonException, $expiredAt)
+    protected function throwRefreshTokenJsonException(OAuth2ServerException $oAuthException)
     {
-        $message = $this->translate(
-            'api.token.expired_exception',
-            ['%expirePeriod%' => $expiredAt],
-            null,
-            $this->locale
-        );
+        $toReturn = $oAuthException->getResponseBody();
 
         $toReturn = ApiHelper::customResponse(
-            Response::HTTP_UNAUTHORIZED,
+            $oAuthException->getHttpCode(),
             1401,
-            'token_expired',
-            $message
+            $oAuthException->getMessage(),
+            $oAuthException->getDescription()
         );
 
         return $toReturn;

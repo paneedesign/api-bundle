@@ -48,26 +48,6 @@ class PedApiExtension extends Extension
             $container->setParameter('ped_api.client.secret', $client['secret']);
         }
 
-        if (array_key_exists('access_token', $config) === true) {
-            $accessToken = $config['access_token'];
-
-            if (array_key_exists('expire_at', $accessToken) === false) {
-                $this->printException('ped_api.access_token.expire_at');
-            }
-
-            $container->setParameter('ped_api.access_token.expire_at', $accessToken['expire_at']);
-        }
-
-        if (array_key_exists('refresh_token', $config) === true) {
-            $refreshToken = $config['refresh_token'];
-
-            if (array_key_exists('expire_at', $refreshToken) === false) {
-                $this->printException('ped_api.refresh_token.expire_at');
-            }
-
-            $container->setParameter('ped_api.refresh_token.expire_at', $refreshToken['expire_at']);
-        }
-
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
     }
