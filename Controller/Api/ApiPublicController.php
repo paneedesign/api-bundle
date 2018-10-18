@@ -55,9 +55,12 @@ class ApiPublicController extends FOSRestController
      *     name="form",
      *     description="Access Token",
      *     @SWG\Schema(
-     *         required={"access_token"},
+     *         required={"access_token", "refresh_token"},
      *         @SWG\Property(
-     *             type="string", property="access_token", description="The token you got on login action"
+     *             type="string", property="access_token", description="The access token you got on login action"
+     *         ),
+     *         @SWG\Property(
+     *             type="string", property="refresh_token", description="The refresh token you got on login action"
      *         )
      *     )
      * )
@@ -101,7 +104,7 @@ class ApiPublicController extends FOSRestController
             if (array_key_exists('refresh_token', $oAuthToken) === true) {
                 $session->set('refresh_token', $oAuthToken['refresh_token']);
             }
-            
+
             $toReturn = $this->refreshTokenResponse($user, $oAuthToken);
         } catch (\OAuth2\OAuth2ServerException $oAuthException) {
             $toReturn = $this->throwRefreshTokenJsonException($oAuthException);

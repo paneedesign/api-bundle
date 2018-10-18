@@ -66,6 +66,11 @@ class TokenManager extends FOSTokenManager
 
         if ($token && $token->hasExpired() && $refreshToken !== null) {
             $toReturn = $this->getApiAccessTokenByUser($user, OAuth2::GRANT_TYPE_REFRESH_TOKEN, $refreshToken);
+        } elseif ($token && !$token->hasExpired() && $refreshToken !== null) {
+            $toReturn = [
+                'access_token'  => $token->getToken(),
+                'refresh_token' => $refreshToken,
+            ];
         } else {
             $grantType = $this->container->getParameter('ped_api.oauth.grant_url');
             $toReturn = $this->getApiAccessTokenByUser($user, $grantType);
@@ -132,7 +137,7 @@ class TokenManager extends FOSTokenManager
      * @param User $user
      * @param string $grantType
      * @param string $refreshToken
-     * 
+     *
      * @return mixed
      * @throws \Exception
      */
@@ -172,15 +177,17 @@ class TokenManager extends FOSTokenManager
         $tokenController = $this->container->get('fos_oauth_server.controller.token');
 
         /* @var Response $response */
-        $response     = $tokenController->tokenAction($request);
-        $jsonResponse = json_decode($response->getContent());
+        $response = $tokenController->tokenAction($request);
+        $content  = (array) json_decode($response->getContent());
 
-        if (property_exists($jsonResponse, 'access_token')) {
-            return (array) $jsonResponse;
+        if (array_key_exists('access_token', $content)) {
+            return $content;
         }
 
-        throw new \Exception(
-            sprintf('Unable to obtain Access Token. Response from the Server: %s ', var_export($response))
+        throw new \OAuth2\OAuth2ServerException(
+            $response->getStatusCode(),
+            $content['error'],
+            $content['error_description']
         );
     }
 }
