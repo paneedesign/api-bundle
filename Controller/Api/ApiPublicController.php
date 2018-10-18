@@ -118,7 +118,7 @@ class ApiPublicController extends FOSRestController
      *
      * @return array
      */
-    protected function refreshTokenResponse(User $user, $oAuthToken)
+    protected function refreshTokenResponse(User $user, array $oAuthToken)
     {
         return ApiHelper::successResponse(
             array_merge($oAuthToken, ['id' => $user->getId()])
