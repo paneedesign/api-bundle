@@ -133,3 +133,6 @@ php bin/console fos:oauth-server:create-client --redirect-uri="https://api.panee
 Upgrade from 2.x to 3.x
 
 * rename getApiKeyAccessToken in getOAuthToken
+* change signature of `throwRefreshTokenJsonException` from `protected function throwRefreshTokenJsonException(JsonException $jsonException, $expiredAt)` to `protected function throwRefreshTokenJsonException(\OAuth2\OAuth2ServerException $oAuthException)` 
+* remove `api_access_token_expire_at` and `api_refresh_token_expire_at` from parameters
+* add `api_client_id` and `api_client_secret` to parameters

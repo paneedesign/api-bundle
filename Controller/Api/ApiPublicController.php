@@ -5,7 +5,6 @@ namespace PaneeDesign\ApiBundle\Controller\Api;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 
-use OAuth2\OAuth2ServerException;
 use PaneeDesign\ApiBundle\Exception\JsonException;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
@@ -104,7 +103,7 @@ class ApiPublicController extends FOSRestController
             }
             
             $toReturn = $this->refreshTokenResponse($user, $oAuthToken);
-        } catch (OAuth2ServerException $oAuthException) {
+        } catch (\OAuth2\OAuth2ServerException $oAuthException) {
             $toReturn = $this->throwRefreshTokenJsonException($oAuthException);
         } catch (\Exception $exception) {
             $toReturn = $this->throwRefreshTokenException($exception);
@@ -127,13 +126,11 @@ class ApiPublicController extends FOSRestController
     }
 
     /**
-     * @param JsonException $jsonException
+     * @param \OAuth2\OAuth2ServerException $oAuthException
      * @return Response
      */
-    protected function throwRefreshTokenJsonException(OAuth2ServerException $oAuthException)
+    protected function throwRefreshTokenJsonException(\OAuth2\OAuth2ServerException $oAuthException)
     {
-        $toReturn = $oAuthException->getResponseBody();
-
         $toReturn = ApiHelper::customResponse(
             $oAuthException->getHttpCode(),
             1401,
