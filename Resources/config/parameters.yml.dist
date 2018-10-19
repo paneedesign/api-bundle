@@ -3,3 +3,4 @@ parameters:
     api_type:           oauth2
     api_client_id:      ~
     api_client_secret:  ~
+    api_user_class:     PaneeDesign\UserBundle\Entity\User

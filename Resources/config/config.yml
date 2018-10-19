@@ -5,6 +5,11 @@ ped_api:
         id: "%api_client_id%"
         secret: "%api_client_secret%"
 
+doctrine:
+    orm:
+        resolve_target_entities:
+            PaneeDesign\ApiBundle\Entity\UserInterface: "%api_user_class%"
+
 fos_oauth_server:
     db_driver:           orm
     client_class:        PaneeDesign\ApiBundle\Entity\Client

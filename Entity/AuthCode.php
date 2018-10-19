@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: fabianoroberto
+ * User: Fabiano Roberto <fabiano@paneedesign.com>
  * Date: 08/09/15
  * Time: 12:09
  */
@@ -35,7 +35,7 @@ class AuthCode extends BaseAuthCode implements AuthCodeInterface
     protected $client;
 
     /**
-     * @ORM\ManyToOne(targetEntity="PaneeDesign\UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="PaneeDesign\ApiBundle\Entity\UserInterface")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      * @ORM\JoinColumn(nullable=true)
      */
