@@ -16,7 +16,7 @@ use FOS\OAuthServerBundle\Model\Token;
 use FOS\OAuthServerBundle\Model\TokenInterface;
 
 use OAuth2\OAuth2;
-use PaneeDesign\UserBundle\Entity\User;
+use PaneeDesign\ApiBundle\Entity\UserInterface;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,13 +34,13 @@ class TokenManager extends FOSTokenManager
     }
 
     /**
-     * @param User $user
+     * @param UserInterface $user
      * @param string $password
      *
      * @return mixed|string
      * @throws \Exception
      */
-    public function getAccessToken(User $user, $password)
+    public function getAccessToken(UserInterface $user, $password)
     {
         $token = $this->findTokenBy(['user' => $user->getId()]);
 
@@ -54,13 +54,13 @@ class TokenManager extends FOSTokenManager
     }
 
     /**
-     * @param User $user
+     * @param UserInterface $user
      * @param string $refreshToken
      *
      * @return mixed|string
      * @throws \Exception
      */
-    public function getOAuthToken(User $user, $refreshToken = null)
+    public function getOAuthToken(UserInterface $user, $refreshToken = null)
     {
         $token = $this->findTokenBy(['user' => $user->getId()]);
 
@@ -80,9 +80,9 @@ class TokenManager extends FOSTokenManager
     }
 
     /**
-     * @param User $user
+     * @param UserInterface $user
      */
-    public function removeToken(User $user)
+    public function removeToken(UserInterface $user)
     {
         /* @var TokenInterface $token */
         $token = $this->findTokenBy(['user' => $user->getId()]);
@@ -94,13 +94,13 @@ class TokenManager extends FOSTokenManager
     }
 
     /**
-     * @param User $user
+     * @param UserInterface $user
      * @param string $password
      *
      * @return mixed
      * @throws \Exception
      */
-    private function getAccessTokenByCredetial(User $user, $password)
+    private function getAccessTokenByCredetial(UserInterface $user, $password)
     {
         $url = $this->container->get('router')->generate('fos_oauth_server_token');
         $clientId = $this->container->getParameter('ped_api.client.id');
@@ -134,7 +134,7 @@ class TokenManager extends FOSTokenManager
     }
 
     /**
-     * @param User $user
+     * @param UserInterface $user
      * @param string $grantType
      * @param string $refreshToken
      *
@@ -142,7 +142,7 @@ class TokenManager extends FOSTokenManager
      * @throws \Exception
      */
     private function getApiAccessTokenByUser(
-        User $user,
+        UserInterface $user,
         $grantType = OAuth2::GRANT_TYPE_REFRESH_TOKEN,
         $refreshToken = null
     ) {
