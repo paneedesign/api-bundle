@@ -2,13 +2,13 @@
 
 namespace PaneeDesign\ApiBundle\Controller\Api;
 
+use PaneeDesign\ApiBundle\Entity\UserInterface;
 use PaneeDesign\ApiBundle\Exception\InvalidFormException;
 use PaneeDesign\ApiBundle\Handler\ItemHandler;
 
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
 
-use PaneeDesign\UserBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Request;
@@ -290,7 +290,7 @@ abstract class ApiItemsController extends FOSRestController
     /**
      * @param string $accessToken
      *
-     * @return User
+     * @return UserInterface
      */
     protected function getMe($accessToken)
     {
@@ -301,7 +301,7 @@ abstract class ApiItemsController extends FOSRestController
         if ($accessToken === null) {
             $user = null;
         } else {
-            /* @var User $user */
+            /* @var UserInterface $user */
             $user = $accessToken->getUser();
         }
 

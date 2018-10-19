@@ -5,10 +5,10 @@ namespace PaneeDesign\ApiBundle\Controller\Api;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 
+use PaneeDesign\ApiBundle\Entity\UserInterface;
 use PaneeDesign\ApiBundle\Exception\JsonException;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
-use PaneeDesign\UserBundle\Entity\User;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -116,12 +116,12 @@ class ApiPublicController extends FOSRestController
     }
 
     /**
-     * @param User $user
+     * @param UserInterface $user
      * @param array $oAuthToken
      *
      * @return array
      */
-    protected function refreshTokenResponse(User $user, array $oAuthToken)
+    protected function refreshTokenResponse(UserInterface $user, array $oAuthToken)
     {
         return ApiHelper::successResponse(
             array_merge($oAuthToken, ['id' => $user->getId()])
@@ -211,7 +211,7 @@ class ApiPublicController extends FOSRestController
     /**
      * @param string $accessToken
      *
-     * @return User
+     * @return UserInterface
      */
     protected function getMe($accessToken)
     {
