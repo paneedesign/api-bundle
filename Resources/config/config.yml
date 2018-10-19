@@ -8,7 +8,7 @@ ped_api:
 doctrine:
     orm:
         resolve_target_entities:
-            PaneeDesign\ApiBundle\Entity\UserInterface: "%api_user_class%"
+            FOS\UserBundle\Model\UserInterface: "%api_user_class%"
 
 fos_oauth_server:
     db_driver:           orm

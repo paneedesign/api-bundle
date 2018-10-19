@@ -4,8 +4,8 @@ namespace PaneeDesign\ApiBundle\Controller\Api;
 
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
+use FOS\UserBundle\Model\UserInterface;
 
-use PaneeDesign\ApiBundle\Entity\UserInterface;
 use PaneeDesign\ApiBundle\Exception\JsonException;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;

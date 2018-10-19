@@ -14,9 +14,9 @@ use FOS\OAuthServerBundle\Entity\TokenManager as FOSTokenManager;
 use FOS\OAuthServerBundle\Model\ClientInterface;
 use FOS\OAuthServerBundle\Model\Token;
 use FOS\OAuthServerBundle\Model\TokenInterface;
+use FOS\UserBundle\Model\UserInterface;
 
 use OAuth2\OAuth2;
-use PaneeDesign\ApiBundle\Entity\UserInterface;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;

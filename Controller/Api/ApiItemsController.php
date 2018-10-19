@@ -2,7 +2,6 @@
 
 namespace PaneeDesign\ApiBundle\Controller\Api;
 
-use PaneeDesign\ApiBundle\Entity\UserInterface;
 use PaneeDesign\ApiBundle\Exception\InvalidFormException;
 use PaneeDesign\ApiBundle\Handler\ItemHandler;
 
@@ -15,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
+use FOS\UserBundle\Model\UserInterface;
 
 use Swagger\Annotations as SWG;
 

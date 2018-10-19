@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 use FOS\OAuthServerBundle\Entity\AuthCode as BaseAuthCode;
 use FOS\OAuthServerBundle\Model\AuthCodeInterface;
+use FOS\UserBundle\Model\UserInterface;
 
 /**
  * @author Fabiano Roberto <fabiano@paneedesign.com>
@@ -35,7 +36,7 @@ class AuthCode extends BaseAuthCode implements AuthCodeInterface
     protected $client;
 
     /**
-     * @ORM\ManyToOne(targetEntity="PaneeDesign\ApiBundle\Entity\UserInterface")
+     * @ORM\ManyToOne(targetEntity="FOS\UserBundle\Model\UserInterface")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      * @ORM\JoinColumn(nullable=true)
      */
