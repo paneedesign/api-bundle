@@ -195,16 +195,12 @@ abstract class ApiItemsController extends FOSRestController
      */
     public function postAction(Request $request)
     {
-        try {
-            $toPost  = ApiHelper::formatRequestData($request->request->all());
-            $newItem = $this->handler->post(
-                $toPost
-            );
+        $toPost  = ApiHelper::formatRequestData($request->request->all());
+        $newItem = $this->handler->post(
+            $toPost
+        );
 
-            return $newItem;
-        } catch (InvalidFormException $exception) {
-            return $exception->getForm();
-        }
+        return $newItem;
     }
 
     /**
