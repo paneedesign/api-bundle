@@ -2,12 +2,13 @@ ped_api:
     host: "%api_server_host"
     type: "%api_type%"
     client:
-        id: ~
-        secret: ~
-    access_token:
-        expire_at: "%api_access_token_expire_at%"
-    refresh_token:
-        expire_at: "%api_refresh_token_expire_at%"
+        id: "%api_client_id%"
+        secret: "%api_client_secret%"
+
+doctrine:
+    orm:
+        resolve_target_entities:
+            FOS\UserBundle\Model\UserInterface: "%api_user_class%"
 
 fos_oauth_server:
     db_driver:           orm

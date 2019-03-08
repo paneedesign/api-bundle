@@ -8,13 +8,13 @@ use PaneeDesign\ApiBundle\Handler\ItemHandler;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
 
-use PaneeDesign\UserBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Request;
 
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
+use FOS\UserBundle\Model\UserInterface;
 
 use Swagger\Annotations as SWG;
 
@@ -286,7 +286,7 @@ abstract class ApiItemsController extends FOSRestController
     /**
      * @param string $accessToken
      *
-     * @return User
+     * @return UserInterface
      */
     protected function getMe($accessToken)
     {
@@ -297,7 +297,7 @@ abstract class ApiItemsController extends FOSRestController
         if ($accessToken === null) {
             $user = null;
         } else {
-            /* @var User $user */
+            /* @var UserInterface $user */
             $user = $accessToken->getUser();
         }
 

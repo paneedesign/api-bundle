@@ -12,7 +12,7 @@ Step 1: Download the Bundle
 Pane&Design repository is private so, add to `composer.json` this `vcs`
 
 ```json
-    "repositories" : [
+    "repositories": [
         ...
         {
             "type" : "vcs",
@@ -22,7 +22,7 @@ Pane&Design repository is private so, add to `composer.json` this `vcs`
     ...
     "require": {
         ...
-        "paneedesign/api-bundle": "^2.0"   
+        "paneedesign/api-bundle": "^3.0"   
     }
 ```
 
@@ -81,10 +81,11 @@ Add parameters
 // app/config/parameters.yml.dist
 parameters:
     ...
-    api_server_host:              'https://api.paneedesign.com'
-    api_type:                     oauth2
-    api_access_token_expire_at:   ~
-    api_refresh_token_expire_at:  ~
+    api_server_host:    'https://api.paneedesign.com'
+    api_type:           oauth2
+    api_client_id:      ~
+    api_client_secret:  ~
+    api_user_class:     PaneeDesign\UserBundle\Entity\User
 ```
 
 Add configuration
@@ -122,3 +123,18 @@ public_v1:
     name_prefix:  api_1_
     ...
 ```
+
+Generate client
+
+```bash
+php bin/console fos:oauth-server:create-client --redirect-uri="https://api.paneedesign.com/authorize" --grant-type="https://api.paneedesign.com/oauth/v2/api_key" --grant-type="password" --grant-type="refresh_token"
+```
+
+
+Upgrade from 2.x to 3.x
+
+* rename getApiKeyAccessToken in getOAuthToken
+* change signature of `throwRefreshTokenJsonException` from `protected function throwRefreshTokenJsonException(JsonException $jsonException, $expiredAt)` to `protected function throwRefreshTokenJsonException(\OAuth2\OAuth2ServerException $oAuthException)`
+* change signature of `refreshTokenResponse` from `protected function refreshTokenResponse(User $user, $accessToken)` to `protected function refreshTokenResponse(User $user, array $oAuthToken)` 
+* remove `api_access_token_expire_at` and `api_refresh_token_expire_at` from parameters
+* add `api_client_id` and `api_client_secret` to parameters

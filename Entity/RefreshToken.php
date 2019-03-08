@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: fabianoroberto
+ * User: Fabiano Roberto <fabiano@paneedesign.com>
  * Date: 08/09/15
  * Time: 12:09
  */
@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 use FOS\OAuthServerBundle\Entity\RefreshToken as BaseRefreshToken;
 use FOS\OAuthServerBundle\Model\RefreshTokenInterface;
+use FOS\UserBundle\Model\UserInterface;
 
 /**
  * @author Fabiano Roberto <fabiano@paneedesign.com>
@@ -35,7 +36,7 @@ class RefreshToken extends BaseRefreshToken implements RefreshTokenInterface
     protected $client;
 
     /**
-     * @ORM\ManyToOne(targetEntity="PaneeDesign\UserBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="FOS\UserBundle\Model\UserInterface")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE", nullable=true)
      * @ORM\JoinColumn(nullable=true)
      */

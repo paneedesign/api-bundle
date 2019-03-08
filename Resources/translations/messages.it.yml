@@ -1,4 +1,0 @@
-api:
-    token:
-        refresh_exception:  "Impossibile fare il refresh dell'access token! Exception: %exception%"
-        expired_exception:  "Il token è scaduto da più di %expirePeriod%. Per favore effettua il login per ottenere un nuovo token."

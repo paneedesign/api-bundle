@@ -14,10 +14,9 @@ use FOS\OAuthServerBundle\Entity\TokenManager as FOSTokenManager;
 use FOS\OAuthServerBundle\Model\ClientInterface;
 use FOS\OAuthServerBundle\Model\Token;
 use FOS\OAuthServerBundle\Model\TokenInterface;
+use FOS\UserBundle\Model\UserInterface;
 
 use OAuth2\OAuth2;
-use PaneeDesign\ApiBundle\Exception\JsonException;
-use PaneeDesign\UserBundle\Entity\User;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,28 +34,18 @@ class TokenManager extends FOSTokenManager
     }
 
     /**
-     * @param User $user
-     * @param $password
+     * @param UserInterface $user
+     * @param string $password
+     *
      * @return mixed|string
      * @throws \Exception
      */
-    public function getAccessToken(User $user, $password)
+    public function getAccessToken(UserInterface $user, $password)
     {
         $token = $this->findTokenBy(['user' => $user->getId()]);
 
-        if ($token === null) {
-            $client = $this->createClient([
-                OAuth2::GRANT_TYPE_USER_CREDENTIALS,
-                OAuth2::GRANT_TYPE_REFRESH_TOKEN,
-                OAuth2::GRANT_TYPE_IMPLICIT,
-            ]);
-
-            $accessToken = $this->getAccessTokenByClient($user, $password, $client);
-        } elseif ($token->hasExpired()) {
-            $clientManager = $this->container->get('fos_oauth_server.client_manager.default');
-            $client        = $clientManager->findClientBy(['id' => $token->getClientId()]);
-
-            $accessToken = $this->getAccessTokenByClient($user, $password, $client);
+        if ($token === null || $token->hasExpired()) {
+            $accessToken = $this->getAccessTokenByCredetial($user, $password);
         } else {
             $accessToken = $token->getToken();
         }
@@ -65,98 +54,38 @@ class TokenManager extends FOSTokenManager
     }
 
     /**
-     * @param User $user
-     * @param string $lastAccessToken
+     * @param UserInterface $user
+     * @param string $refreshToken
      *
-     * @return mixed
-     * @throws JsonException
+     * @return mixed|string
      * @throws \Exception
      */
-    public function getApiKeyAccessToken(User $user, $lastAccessToken = null)
+    public function getOAuthToken(UserInterface $user, $refreshToken = null)
     {
-        $grantApiKey = $this->container->getParameter('ped_api.oauth.grant_url');
+        $token = $this->findTokenBy(['user' => $user->getId()]);
 
-        $accessTokenExprireAt  = $this->getTimestamp('ped_api.access_token.expire_at', '-');
-        $refreshTokenExprireAt = $this->getTimestamp('ped_api.refresh_token.expire_at');
-
-        if ($lastAccessToken !== null && $lastAccessToken !== '') {
-            $params = [
-                'user' => $user->getId(),
-                'token' => $lastAccessToken,
+        if ($token && $token->hasExpired() && $refreshToken !== null) {
+            $toReturn = $this->getApiAccessTokenByUser($user, OAuth2::GRANT_TYPE_REFRESH_TOKEN, $refreshToken);
+        } elseif ($token && !$token->hasExpired() && $refreshToken !== null) {
+            $toReturn = [
+                'access_token'  => $token->getToken(),
+                'refresh_token' => $refreshToken,
             ];
-
-            /* @var TokenInterface $token */
-            $token = $this->findTokenBy($params);
-
-            if ($token->getExpiresAt() < $accessTokenExprireAt->getTimestamp()) {
-                $this->removeToken($user, $lastAccessToken);
-
-                throw new JsonException('TokenExpired');
-            } else {
-                if ($token->hasExpired()) {
-                    $token->setExpiresAt($refreshTokenExprireAt->getTimestamp());
-
-                    $refreshTokenManager = $this->container->get('fos_oauth_server.refresh_token_manager.default');
-                    $refreshTokenManager->updateToken($token);
-                }
-
-                $accessToken = $token->getToken();
-            }
         } else {
-            $params = ['user' => $user->getId()];
-
-            /* @var Token|TokenInterface $token */
-            $token = $this->findTokenBy($params);
-
-            if ($token === null) {
-                $client = $this->createClient([$grantApiKey]);
-                $accessToken = $this->getApiAccessTokenByClient($user, $client, $grantApiKey);
-            } else {
-                $client = $token->getClient();
-
-                try {
-                    $accessToken = $this->getApiAccessTokenByClient($user, $client, $grantApiKey);
-                } catch (\Exception $e) {
-                    $client = $this->createClient([$grantApiKey]);
-                    $accessToken = $this->getApiAccessTokenByClient($user, $client, $grantApiKey);
-                }
-            }
+            $grantType = $this->container->getParameter('ped_api.oauth.grant_url');
+            $toReturn = $this->getApiAccessTokenByUser($user, $grantType);
         }
 
-        return $accessToken;
+        return $toReturn;
     }
 
     /**
-     * @param array $grantTypes
-     * @return ClientInterface
+     * @param UserInterface $user
      */
-    public function createClient($grantTypes = [OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS])
+    public function removeToken(UserInterface $user)
     {
-        $clientManager = $this->container->get('fos_oauth_server.client_manager.default');
-        $client         = $clientManager->createClient();
-
-        $client->setAllowedGrantTypes($grantTypes);
-        $clientManager->updateClient($client);
-
-        return $client;
-    }
-
-    /**
-     * @param User $user
-     * @param null|string $lastAccessToken
-     */
-    public function removeToken(User $user, $lastAccessToken = null)
-    {
-        $params = [
-            'user' => $user->getId(),
-        ];
-
-        if ($lastAccessToken !== null) {
-            $params['token'] = $lastAccessToken;
-        }
-
         /* @var TokenInterface $token */
-        $token = $this->findTokenBy($params);
+        $token = $this->findTokenBy(['user' => $user->getId()]);
 
         if ($token) {
             $refreshTokenManager = $this->container->get('fos_oauth_server.refresh_token_manager.default');
@@ -165,25 +94,27 @@ class TokenManager extends FOSTokenManager
     }
 
     /**
-     * @param User $user
+     * @param UserInterface $user
      * @param string $password
-     * @param ClientInterface $client
+     *
      * @return mixed
      * @throws \Exception
      */
-    private function getAccessTokenByClient(User $user, $password, ClientInterface $client)
+    private function getAccessTokenByCredetial(UserInterface $user, $password)
     {
         $url = $this->container->get('router')->generate('fos_oauth_server_token');
+        $clientId = $this->container->getParameter('ped_api.client.id');
+        $clientSecret = $this->container->getParameter('ped_api.client.secret');
 
         $request = Request::create(
             $url,
             'POST',
             [
-                'client_id' => $client->getPublicId(),
-                'client_secret' => $client->getSecret(),
-                'grant_type' => OAuth2::GRANT_TYPE_USER_CREDENTIALS,
-                'username' => $user->getEmailCanonical(),
-                'password' => $password,
+                'client_id'     => $clientId,
+                'client_secret' => $clientSecret,
+                'grant_type'    => OAuth2::GRANT_TYPE_USER_CREDENTIALS,
+                'username'      => $user->getEmailCanonical(),
+                'password'      => $password,
             ]
         );
 
@@ -203,65 +134,60 @@ class TokenManager extends FOSTokenManager
     }
 
     /**
-     * @param User $user
-     * @param ClientInterface $client
+     * @param UserInterface $user
      * @param string $grantType
+     * @param string $refreshToken
+     *
      * @return mixed
      * @throws \Exception
      */
-    private function getApiAccessTokenByClient(
-        User $user,
-        ClientInterface $client,
-        $grantType = OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS
+    private function getApiAccessTokenByUser(
+        UserInterface $user,
+        $grantType = OAuth2::GRANT_TYPE_REFRESH_TOKEN,
+        $refreshToken = null
     ) {
         $url = $this->container->get('router')->generate('fos_oauth_server_token');
+        $clientId     = $this->container->getParameter('ped_api.client.id');
+        $clientSecret = $this->container->getParameter('ped_api.client.secret');
 
-        $request = Request::create(
-            $url,
-            'POST',
-            [
-                'client_id'     => $client->getPublicId(),
-                'client_secret' => $client->getSecret(),
-                'grant_type'    => $grantType,
-                'api_key'       => $user->getSalt(),
-            ]
-        );
+        if ($grantType === OAuth2::GRANT_TYPE_REFRESH_TOKEN) {
+            $request = Request::create(
+                $url,
+                'POST',
+                [
+                    'client_id'     => $clientId,
+                    'client_secret' => $clientSecret,
+                    'grant_type'    => $grantType,
+                    'refresh_token' => $refreshToken,
+                ]
+            );
+        } else {
+            $request = Request::create(
+                $url,
+                'POST',
+                [
+                    'client_id'     => $clientId,
+                    'client_secret' => $clientSecret,
+                    'grant_type'    => $grantType,
+                    'api_key'       => $user->getSalt(),
+                ]
+            );
+        }
 
         $tokenController = $this->container->get('fos_oauth_server.controller.token');
 
         /* @var Response $response */
-        $response     = $tokenController->tokenAction($request);
-        $jsonResponse = json_decode($response->getContent());
+        $response = $tokenController->tokenAction($request);
+        $content  = (array) json_decode($response->getContent());
 
-        if (property_exists($jsonResponse, 'access_token')) {
-            return $jsonResponse->access_token;
+        if (array_key_exists('access_token', $content)) {
+            return $content;
         }
 
-        throw new \Exception(
-            sprintf('Unable to obtain Access Token. Response from the Server: %s ', var_export($response))
+        throw new \OAuth2\OAuth2ServerException(
+            $response->getStatusCode(),
+            $content['error'],
+            $content['error_description']
         );
-    }
-
-    /**
-     * @param string $param
-     * @param string $sign
-     * @param string $unit
-     *
-     * @return \DateTime
-     */
-    private function getTimestamp($param, $sign = '+', $unit = 'hours')
-    {
-        $expireAt = $this->container->getParameter($param);
-
-        if (is_numeric($expireAt)) {
-            $toProcess = sprintf('%s%s %s', $sign, $expireAt, $unit);
-        } else {
-            $expireAt = str_replace(['+', '-'], '', $expireAt);
-            $toProcess = sprintf('%s%s', $sign, $expireAt);
-        }
-
-        $toReturn = new \DateTime($toProcess);
-
-        return $toReturn;
     }
 }

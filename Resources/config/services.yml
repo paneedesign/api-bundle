@@ -1,9 +1,8 @@
 parameters:
-    ped_api.item_handler.class:         PaneeDesign\ApiBundle\Handler\ItemHandler
     ped_api.access_token_manager.class: PaneeDesign\ApiBundle\Manager\TokenManager
     ped_api.client.class:               PaneeDesign\ApiBundle\OAuth2\Client
     ped_api.api_key_grant.class:        PaneeDesign\ApiBundle\OAuth2\ApiKeyGrantExtension
-    ped_api.oauth2_user_entity.class:   PaneeDesign\UserBundle\Entity\User
+    ped_api.oauth2_user_entity.class:   '%api_user_class%'
     ped_api.oauth2_client.class:        OAuth2\Client
     ped_api.oauth.grant_url:            '%api_server_host%/oauth/v2/api_key'
     ped_api.oauth.token_url:            '%api_server_host%/oauth/v2/token'
@@ -11,10 +10,13 @@ parameters:
     ped_api.infos.url:                  '%api_server_host%/api/user'
 
 services:
-    ped_api.item_handler:
-        class: "%ped_api.item_handler.class%"
-        arguments: ["@doctrine.orm.entity_manager", "@service_container", "@form.factory"]
-        public: true
+    PaneeDesign\ApiBundle\Handler\ItemHandler:
+        arguments: ["@doctrine.orm.entity_manager", "@form.factory"]
+
+    PaneeDesign\ApiBundle\Handler\RestApiHandler:
+        arguments:
+            $handler: '@PaneeDesign\ApiBundle\Handler\ItemHandler'
+
     ped_api.api_key_grant:
         class: "%ped_api.api_key_grant.class%"
         arguments: ["@doctrine.orm.entity_manager", "%ped_api.oauth2_user_entity.class%"]

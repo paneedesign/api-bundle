@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: fabianoroberto
+ * User: Fabiano Roberto <fabiano@paneedesign.com>
  * Date: 08/09/15
  * Time: 12:07
  */

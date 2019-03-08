@@ -1,102 +1,62 @@
 <?php
+
+declare(strict_types=1);
+
 /**
- * Created by PhpStorm.
- * Item: luigi
- * Date: 31/08/15
- * Time: 09:09
+ * Fabiano Roberto <fabiano@paneedesign.com>
+ * Date: 28/01/19
+ * Time: 13:01.
  */
 
 namespace PaneeDesign\ApiBundle\Handler;
 
-use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use AppBundle\Exception\InvalidFormException;
 use Doctrine\Common\Persistence\ObjectManager;
-use Doctrine\Common\Persistence\ObjectRepository;
-
-use PaneeDesign\ApiBundle\Exception\InvalidFormException;
-
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Doctrine\Common\Persistence\ObjectManagerDecorator;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
-class ItemHandler implements ItemHandlerInterface
+final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInterface
 {
     /**
-     * @var ObjectManager
+     * @var string
      */
-    protected $om;
-    protected $entityClass;
-    protected $entityForm;
+    private $className;
 
     /**
-     * @var ObjectRepository
+     * @var string
      */
-    protected $repository;
-    protected $formFactory;
-    protected $container;
+    private $formName;
 
-    protected $accessToken;
-    protected $locale;
+    /**
+     * @var FormFactoryInterface
+     */
+    private $formFactory;
 
-    public function __construct(ObjectManager $om, ContainerInterface $container, FormFactoryInterface $formFactory)
+    public function __construct(ObjectManager $wrapped, FormFactoryInterface $formFactory)
     {
-        $this->om          = $om;
-        $this->container   = $container;
+        $this->wrapped = $wrapped;
         $this->formFactory = $formFactory;
     }
 
-    public function setEntityClass($entityClass)
+    public function setClassName(string $className)
     {
-        $this->entityClass = $entityClass;
-        $this->repository  = $this->om->getRepository($this->entityClass);
+        $this->className = $className;
     }
 
-    /**
-     * @return ClassMetadata
-     */
-    public function getClassMetadata()
+    public function getClassName(): string
     {
-        return $this->om->getClassMetadata($this->entityClass);
+        return $this->className;
     }
 
-    public function setEntityForm($entityForm)
+    public function setFormName(string $formName)
     {
-        $this->entityForm = $entityForm;
+        $this->formName = $formName;
     }
 
-    public function setAccessToken($accessToken)
+    public function getFormName(): string
     {
-        $this->accessToken = $accessToken;
-    }
-
-    public function getAccessToken()
-    {
-        return $this->accessToken;
-    }
-
-    public function setLocale($locale)
-    {
-        $this->locale = $locale;
-    }
-
-    public function getLocale()
-    {
-        return $this->locale;
-    }
-
-    /**
-     * @return ObjectRepository
-     */
-    public function getRepository()
-    {
-        return $this->repository;
-    }
-
-    /**
-     * @return ObjectManager
-     */
-    public function getEntityManager()
-    {
-        return $this->om;
+        return $this->formName;
     }
 
     /**
@@ -108,23 +68,22 @@ class ItemHandler implements ItemHandlerInterface
      */
     public function get($id)
     {
-        return $this->repository->find($id);
+        return $this->find($this->className, $id);
     }
 
     /**
      * Get list of Item by criteria.
      *
      * @param array $criteria
-     *
      * @param array $orderBy
-     * @param int $limit
-     * @param int $offset
+     * @param int   $limit
+     * @param int   $offset
      *
      * @return array
      */
     public function getBy(array $criteria, array $orderBy = null, $limit = 1, $offset = 0)
     {
-        return $this->repository->findBy($criteria, $orderBy, $limit, $offset);
+        return $this->getRepository($this->className)->findBy($criteria, $orderBy, $limit, $offset);
     }
 
     /**
@@ -136,20 +95,20 @@ class ItemHandler implements ItemHandlerInterface
      */
     public function getOneBy($criteria)
     {
-        return $this->repository->findOneBy($criteria);
+        return $this->getRepository($this->className)->findOneBy($criteria);
     }
 
     /**
      * Get a list of Items.
      *
-     * @param int $limit the limit of the result
+     * @param int $limit  the limit of the result
      * @param int $offset starting from the offset
      *
      * @return array
      */
     public function all($limit = 5, $offset = 0)
     {
-        return $this->repository->findBy([], null, $limit, $offset);
+        return $this->getRepository($this->className)->findBy([], null, $limit, $offset);
     }
 
     /**
@@ -158,24 +117,26 @@ class ItemHandler implements ItemHandlerInterface
      * @param array $parameters
      *
      * @return object
+     *
      * @throws \Exception
      */
     public function post(array $parameters)
     {
-        $Item = $this->createItem();
+        $item = $this->createItem();
 
-        return $this->processForm($Item, $parameters, 'POST');
+        return $this->processForm($item, $parameters, 'POST');
     }
 
     /**
      * Get count of Item by criteria.
      *
      * @param array $criteria
+     *
      * @return int
      */
     public function count($criteria = [])
     {
-        $elem = $this->repository->findBy($criteria);
+        $elem = $this->getRepository($this->className)->findBy($criteria);
 
         return count($elem);
     }
@@ -183,59 +144,62 @@ class ItemHandler implements ItemHandlerInterface
     /**
      * Edit a Item.
      *
-     * @param int $id
+     * @param int   $id
      * @param array $parameters
      *
      * @return object
+     *
      * @throws \Exception
      */
     public function put($id, array $parameters)
     {
-        $Item = $this->get($id);
+        $item = $this->get($id);
 
-        if ($Item == null) {
+        if (null == $item) {
             throw new ResourceNotFoundException();
         }
 
-        return $this->processForm($Item, $parameters, 'PUT');
+        return $this->processForm($item, $parameters, 'PUT');
     }
 
     /**
      * Partially update a Item.
      *
-     * @param int $id
+     * @param int   $id
      * @param array $parameters
      *
      * @return object
+     *
      * @throws \Exception
      */
     public function patch($id, array $parameters)
     {
-        $Item = $this->get($id);
+        $item = $this->get($id);
 
-        if ($Item == null) {
+        if (null == $item) {
             throw new ResourceNotFoundException();
         }
 
-        return $this->processForm($Item, $parameters, 'PATCH');
+        return $this->processForm($item, $parameters, 'PATCH');
     }
 
     /**
      * Delete a Item.
      *
      * @param int $id
+     *
      * @return bool
      */
     public function delete($id)
     {
-        $Item = $this->get($id);
+        $item = $this->get($id);
 
-        if ($Item == null) {
+        if (null == $item) {
             throw new ResourceNotFoundException();
         }
 
-        $this->getEntityManager()->remove($Item);
-        $this->getEntityManager()->flush();
+        $this->remove($item);
+        $this->flush();
 
         return true;
     }
@@ -244,33 +208,35 @@ class ItemHandler implements ItemHandlerInterface
      * Processes the form.
      *
      * @param object $item
-     * @param array $parameters
-     * @param String $method
+     * @param array  $parameters
+     * @param string $method
+     *
      * @return object
+     *
      * @throws \Exception
      */
-    protected function processForm($item, array $parameters, $method = "PUT")
+    private function processForm($item, array $parameters, $method = 'PUT')
     {
-        if (empty($this->entityForm)) {
-            throw new \Exception("No entityForm set for ".get_class());
+        if (empty($this->formName)) {
+            throw new \Exception('No formName set for ' . get_class());
         }
 
-        $form = $this->formFactory->create($this->entityForm, $item, ['method' => $method]);
+        $form = $this->formFactory->create($this->formName, $item, ['method' => $method]);
         $form->submit($parameters, 'PATCH' !== $method);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $item = $form->getData();
-            $this->om->persist($item);
-            $this->om->flush();
+            $this->persist($item);
+            $this->flush();
 
             return $item;
         }
 
-        throw new InvalidFormException('Invalid submitted data', $form);
+        throw new InvalidFormException($form);
     }
 
     private function createItem()
     {
-        return new $this->entityClass();
+        return new $this->className();
     }
 }

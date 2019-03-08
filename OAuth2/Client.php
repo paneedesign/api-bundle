@@ -39,7 +39,9 @@ class Client
 
     /**
      * @param string $code
+     *
      * @return mixed
+     * @throws AdoyOAuth2\Exception
      */
     public function getAccessToken($code = null)
     {
@@ -52,15 +54,20 @@ class Client
         if (isset($response['result']) && isset($response['result']['access_token'])) {
             $accessToken = $response['result']['access_token'];
             $this->client->setAccessToken($accessToken);
+
             return $accessToken;
         }
 
-        throw new AdoyOAuth2\Exception(sprintf('Unable to obtain Access Token. Response from the Server: %s ', var_export($response)));
+        throw new AdoyOAuth2\Exception(
+            sprintf('Unable to obtain Access Token. Response from the Server: %s ', var_export($response))
+        );
     }
 
     /**
      * @param string $url
+     *
      * @return mixed
+     * @throws AdoyOAuth2\Exception
      */
     public function fetch($url)
     {
