@@ -18,30 +18,6 @@ use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 class ApiPublicController extends FOSRestController
 {
     /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    /**
-     * @var string
-     */
-    protected $locale;
-
-    public function setContainer(ContainerInterface $container = null)
-    {
-        parent::setContainer($container);
-
-        $request = Request::createFromGlobals();
-        $locale = $request->query->get('_locale');
-
-        if ($locale === null) {
-            $locale = $request->headers->get('_locale');
-        }
-
-        $this->locale = $locale;
-    }
-
-    /**
      * Refresh given token
      *
      * @SWG\Tag(name="Public")
@@ -135,25 +111,6 @@ class ApiPublicController extends FOSRestController
         }
 
         return $accessToken;
-    }
-
-    /**
-     * Translates the given message.
-     *
-     * @param string      $id         The message id (may also be an object that can be cast to string)
-     * @param array       $parameters An array of parameters for the message
-     * @param string|null $domain     The domain for the message or null to use the default
-     * @param string|null $locale     The locale or null to use the default
-     *
-     * @throws \InvalidArgumentException If the locale contains invalid characters
-     *
-     * @return string The translated string
-     */
-    protected function translate($id, array $parameters = [], $domain = null, $locale = null)
-    {
-        $translator = $this->get('translator');
-
-        return $translator->trans($id, $parameters, $domain, $locale);
     }
 
     /**
