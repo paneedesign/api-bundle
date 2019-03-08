@@ -9,15 +9,11 @@
 namespace PaneeDesign\ApiBundle\Manager;
 
 use Doctrine\ORM\EntityManager;
-
 use FOS\OAuthServerBundle\Entity\TokenManager as FOSTokenManager;
-use FOS\OAuthServerBundle\Model\ClientInterface;
 use FOS\OAuthServerBundle\Model\Token;
 use FOS\OAuthServerBundle\Model\TokenInterface;
 use FOS\UserBundle\Model\UserInterface;
-
 use OAuth2\OAuth2;
-
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,9 +31,10 @@ class TokenManager extends FOSTokenManager
 
     /**
      * @param UserInterface $user
-     * @param string $password
+     * @param string        $password
      *
      * @return mixed|string
+     *
      * @throws \Exception
      */
     public function getAccessToken(UserInterface $user, $password)
@@ -55,9 +52,10 @@ class TokenManager extends FOSTokenManager
 
     /**
      * @param UserInterface $user
-     * @param string $refreshToken
+     * @param string        $refreshToken
      *
      * @return mixed|string
+     *
      * @throws \Exception
      */
     public function getOAuthToken(UserInterface $user, $refreshToken = null)
@@ -68,7 +66,7 @@ class TokenManager extends FOSTokenManager
             $toReturn = $this->getApiAccessTokenByUser($user, OAuth2::GRANT_TYPE_REFRESH_TOKEN, $refreshToken);
         } elseif ($token && !$token->hasExpired() && $refreshToken !== null) {
             $toReturn = [
-                'access_token'  => $token->getToken(),
+                'access_token' => $token->getToken(),
                 'refresh_token' => $refreshToken,
             ];
         } else {
@@ -95,9 +93,10 @@ class TokenManager extends FOSTokenManager
 
     /**
      * @param UserInterface $user
-     * @param string $password
+     * @param string        $password
      *
      * @return mixed
+     *
      * @throws \Exception
      */
     private function getAccessTokenByCredetial(UserInterface $user, $password)
@@ -110,18 +109,18 @@ class TokenManager extends FOSTokenManager
             $url,
             'POST',
             [
-                'client_id'     => $clientId,
+                'client_id' => $clientId,
                 'client_secret' => $clientSecret,
-                'grant_type'    => OAuth2::GRANT_TYPE_USER_CREDENTIALS,
-                'username'      => $user->getEmailCanonical(),
-                'password'      => $password,
+                'grant_type' => OAuth2::GRANT_TYPE_USER_CREDENTIALS,
+                'username' => $user->getEmailCanonical(),
+                'password' => $password,
             ]
         );
 
         $tokenController = $this->container->get('fos_oauth_server.controller.token');
 
         /* @var Response $response */
-        $response     = $tokenController->tokenAction($request);
+        $response = $tokenController->tokenAction($request);
         $jsonResponse = json_decode($response->getContent());
 
         if (property_exists($jsonResponse, 'access_token')) {
@@ -135,10 +134,11 @@ class TokenManager extends FOSTokenManager
 
     /**
      * @param UserInterface $user
-     * @param string $grantType
-     * @param string $refreshToken
+     * @param string        $grantType
+     * @param string        $refreshToken
      *
      * @return mixed
+     *
      * @throws \Exception
      */
     private function getApiAccessTokenByUser(
@@ -147,7 +147,7 @@ class TokenManager extends FOSTokenManager
         $refreshToken = null
     ) {
         $url = $this->container->get('router')->generate('fos_oauth_server_token');
-        $clientId     = $this->container->getParameter('ped_api.client.id');
+        $clientId = $this->container->getParameter('ped_api.client.id');
         $clientSecret = $this->container->getParameter('ped_api.client.secret');
 
         if ($grantType === OAuth2::GRANT_TYPE_REFRESH_TOKEN) {
@@ -155,9 +155,9 @@ class TokenManager extends FOSTokenManager
                 $url,
                 'POST',
                 [
-                    'client_id'     => $clientId,
+                    'client_id' => $clientId,
                     'client_secret' => $clientSecret,
-                    'grant_type'    => $grantType,
+                    'grant_type' => $grantType,
                     'refresh_token' => $refreshToken,
                 ]
             );
@@ -166,10 +166,10 @@ class TokenManager extends FOSTokenManager
                 $url,
                 'POST',
                 [
-                    'client_id'     => $clientId,
+                    'client_id' => $clientId,
                     'client_secret' => $clientSecret,
-                    'grant_type'    => $grantType,
-                    'api_key'       => $user->getSalt(),
+                    'grant_type' => $grantType,
+                    'api_key' => $user->getSalt(),
                 ]
             );
         }
@@ -178,7 +178,7 @@ class TokenManager extends FOSTokenManager
 
         /* @var Response $response */
         $response = $tokenController->tokenAction($request);
-        $content  = (array) json_decode($response->getContent());
+        $content = (array) json_decode($response->getContent());
 
         if (array_key_exists('access_token', $content)) {
             return $content;

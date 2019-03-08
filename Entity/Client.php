@@ -10,7 +10,6 @@ namespace PaneeDesign\ApiBundle\Entity;
 
 use FOS\OAuthServerBundle\Entity\Client as BaseClient;
 use FOS\OAuthServerBundle\Model\ClientInterface;
-
 use Doctrine\ORM\Mapping as ORM;
 
 /**

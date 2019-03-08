@@ -9,10 +9,8 @@
 namespace PaneeDesign\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use FOS\OAuthServerBundle\Entity\RefreshToken as BaseRefreshToken;
 use FOS\OAuthServerBundle\Model\RefreshTokenInterface;
-use FOS\UserBundle\Model\UserInterface;
 
 /**
  * @author Fabiano Roberto <fabiano@paneedesign.com>

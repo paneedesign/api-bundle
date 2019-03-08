@@ -24,7 +24,7 @@ interface ItemHandlerInterface
     /**
      * Get a list of Items.
      *
-     * @param int $limit the limit of the result
+     * @param int $limit  the limit of the result
      * @param int $offset starting from the offset
      *
      * @return array
@@ -47,7 +47,7 @@ interface ItemHandlerInterface
      *
      * @api
      *
-     * @param int $id
+     * @param int   $id
      * @param array $parameters
      *
      * @return object
@@ -59,7 +59,7 @@ interface ItemHandlerInterface
      *
      * @api
      *
-     * @param int $id
+     * @param int   $id
      * @param array $parameters
      *
      * @return object

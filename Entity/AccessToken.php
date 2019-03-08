@@ -9,10 +9,8 @@
 namespace PaneeDesign\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use FOS\OAuthServerBundle\Entity\AccessToken as BaseAccessToken;
 use FOS\OAuthServerBundle\Model\AccessTokenInterface;
-use FOS\UserBundle\Model\UserInterface;
 
 /**
  * @author Fabiano Roberto <fabiano@paneedesign.com>

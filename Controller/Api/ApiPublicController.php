@@ -5,16 +5,10 @@ namespace PaneeDesign\ApiBundle\Controller\Api;
 use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\UserBundle\Model\UserInterface;
-
-use PaneeDesign\ApiBundle\Exception\JsonException;
-use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
-
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
-
 use Swagger\Annotations as SWG;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
@@ -38,7 +32,7 @@ class ApiPublicController extends FOSRestController
         parent::setContainer($container);
 
         $request = Request::createFromGlobals();
-        $locale  = $request->query->get('_locale');
+        $locale = $request->query->get('_locale');
 
         if ($locale === null) {
             $locale = $request->headers->get('_locale');
@@ -77,12 +71,13 @@ class ApiPublicController extends FOSRestController
      * @Annotations\Post("/publics/tokens/refresh")
      *
      * @param Request $request
+     *
      * @return Response
      */
     public function refreshTokenAction(Request $request)
     {
-        $session      = $request->getSession();
-        $accessToken  = $request->get('access_token');
+        $session = $request->getSession();
+        $accessToken = $request->get('access_token');
         $refreshToken = $request->get('refresh_token');
 
         if ($accessToken === null) {
@@ -97,7 +92,7 @@ class ApiPublicController extends FOSRestController
 
         /* @var TokenManager $tokenManager */
         $tokenManager = $this->container->get('ped_api.access_token_manager.default');
-        $oAuthToken   = $tokenManager->getOAuthToken($user, $refreshToken);
+        $oAuthToken = $tokenManager->getOAuthToken($user, $refreshToken);
 
         $session->set('access_token', $oAuthToken['access_token']);
 
@@ -110,26 +105,25 @@ class ApiPublicController extends FOSRestController
 
     /**
      * @param UserInterface $user
-     * @param array $oAuthToken
+     * @param array         $oAuthToken
      *
      * @return array
      */
     protected function refreshTokenResponse(UserInterface $user, array $oAuthToken)
     {
-        return ApiHelper::successResponse(
-            array_merge($oAuthToken, ['id' => $user->getId()])
-        );
+        return array_merge($oAuthToken, ['id' => $user->getId()]);
     }
 
     /**
      * @param Request $request
+     *
      * @return array|mixed|string
      */
     protected function getAccessToken(Request $request)
     {
         $accessToken = $request->request->get('access_token');
         $accessToken = trim(str_replace('Bearer', '', $accessToken));
-        $headers     = function_exists('getallheaders') ? getallheaders() : null;
+        $headers = function_exists('getallheaders') ? getallheaders() : null;
 
         if ($headers !== null && isset($headers['Authorization'])) {
             $request->headers->set('Authorization', $headers['Authorization']);
@@ -155,7 +149,7 @@ class ApiPublicController extends FOSRestController
      *
      * @return string The translated string
      */
-    protected function translate($id, array $parameters = array(), $domain = null, $locale = null)
+    protected function translate($id, array $parameters = [], $domain = null, $locale = null)
     {
         $translator = $this->get('translator');
 

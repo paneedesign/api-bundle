@@ -9,10 +9,8 @@
 namespace PaneeDesign\ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use FOS\OAuthServerBundle\Entity\AuthCode as BaseAuthCode;
 use FOS\OAuthServerBundle\Model\AuthCodeInterface;
-use FOS\UserBundle\Model\UserInterface;
 
 /**
  * @author Fabiano Roberto <fabiano@paneedesign.com>
