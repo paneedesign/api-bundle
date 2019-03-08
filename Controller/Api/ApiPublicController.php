@@ -6,7 +6,6 @@ use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\UserBundle\Model\UserInterface;
 
-use PaneeDesign\ApiBundle\Exception\InvalidCredentialsException;
 use PaneeDesign\ApiBundle\Exception\JsonException;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
@@ -17,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 use Swagger\Annotations as SWG;
+use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 /**
  * @Annotations\RouteResource("Public")
@@ -92,7 +92,7 @@ class ApiPublicController extends FOSRestController
         $user = $this->getMe($accessToken);
 
         if ($user === null) {
-            throw new InvalidCredentialsException();
+            throw new BadCredentialsException();
         }
 
         /* @var TokenManager $tokenManager */
