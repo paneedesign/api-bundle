@@ -7,7 +7,6 @@
 
 namespace PaneeDesign\ApiBundle\Handler;
 
-use AppBundle\Exception\EntityNotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 
 class RestApiHandler
@@ -60,18 +59,10 @@ class RestApiHandler
      * @param $id
      *
      * @return object
-     *
-     * @throws EntityNotFoundException
      */
     public function get($id)
     {
-        $item = $this->handler->get($id);
-
-        if (empty($item)) {
-            throw new EntityNotFoundException($this->getClassName(), $id);
-        }
-
-        return $item;
+        return $this->handler->get($id);
     }
 
     /**

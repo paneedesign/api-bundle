@@ -6,16 +6,14 @@ use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\UserBundle\Model\UserInterface;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 /**
- * @Annotations\RouteResource("Public")
+ * @Annotations\RouteResource("Oauth")
  */
-class ApiPublicController extends FOSRestController
+class ApiOauthController extends FOSRestController
 {
     /**
      * Refresh given token
@@ -48,7 +46,9 @@ class ApiPublicController extends FOSRestController
      *
      * @param Request $request
      *
-     * @return Response
+     * @return array
+     *
+     * @throws \Exception
      */
     public function refreshTokenAction(Request $request)
     {

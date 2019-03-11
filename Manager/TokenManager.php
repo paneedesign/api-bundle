@@ -10,7 +10,6 @@ namespace PaneeDesign\ApiBundle\Manager;
 
 use Doctrine\ORM\EntityManager;
 use FOS\OAuthServerBundle\Entity\TokenManager as FOSTokenManager;
-use FOS\OAuthServerBundle\Model\Token;
 use FOS\OAuthServerBundle\Model\TokenInterface;
 use FOS\UserBundle\Model\UserInterface;
 use OAuth2\OAuth2;

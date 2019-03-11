@@ -26,6 +26,11 @@ class InvalidFormException extends \Exception
         $this->form = $form;
     }
 
+    public function getType(): string
+    {
+        return 'INVALID_FORM';
+    }
+
     public function getErrors(): array
     {
         return $this->getFormErrors($this->form);

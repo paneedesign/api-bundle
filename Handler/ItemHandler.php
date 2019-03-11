@@ -10,11 +10,11 @@ declare(strict_types=1);
 
 namespace PaneeDesign\ApiBundle\Handler;
 
-use AppBundle\Exception\InvalidFormException;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectManagerDecorator;
+use PaneeDesign\ApiBundle\Exception\EntityNotFoundException;
+use PaneeDesign\ApiBundle\Exception\InvalidFormException;
 use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInterface
 {
@@ -65,10 +65,18 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
      * @param mixed $id
      *
      * @return object
+     *
+     * @throws EntityNotFoundException
      */
     public function get($id)
     {
-        return $this->find($this->className, $id);
+        $item = $this->find($this->className, $id);
+
+        if ($item === null) {
+            throw new EntityNotFoundException($this->getClassName(), $id);
+        }
+
+        return $item;
     }
 
     /**
@@ -149,14 +157,15 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
      *
      * @return object
      *
+     * @throws EntityNotFoundException
      * @throws \Exception
      */
     public function put($id, array $parameters)
     {
         $item = $this->get($id);
 
-        if (null == $item) {
-            throw new ResourceNotFoundException();
+        if ($item === null) {
+            throw new EntityNotFoundException($this->className, $id);
         }
 
         return $this->processForm($item, $parameters, 'PUT');
@@ -170,14 +179,15 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
      *
      * @return object
      *
+     * @throws EntityNotFoundException
      * @throws \Exception
      */
     public function patch($id, array $parameters)
     {
         $item = $this->get($id);
 
-        if (null == $item) {
-            throw new ResourceNotFoundException();
+        if ($item === null) {
+            throw new EntityNotFoundException($this->className, $id);
         }
 
         return $this->processForm($item, $parameters, 'PATCH');
@@ -189,13 +199,15 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
      * @param int $id
      *
      * @return bool
+     *
+     * @throws EntityNotFoundException
      */
     public function delete($id)
     {
         $item = $this->get($id);
 
-        if (null == $item) {
-            throw new ResourceNotFoundException();
+        if ($item === null) {
+            throw new EntityNotFoundException($this->className, $id);
         }
 
         $this->remove($item);

@@ -10,6 +10,14 @@ namespace PaneeDesign\ApiBundle\Handler;
 
 interface ItemHandlerInterface
 {
+    public function setClassName(string $className);
+
+    public function getClassName(): string;
+
+    public function setFormName(string $formName);
+
+    public function getFormName(): string;
+
     /**
      * Get a Item given the identifier
      *
