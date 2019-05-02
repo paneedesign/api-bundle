@@ -53,8 +53,8 @@ class ApiOauthController extends FOSRestController
     public function refreshTokenAction(Request $request)
     {
         $session = $request->getSession();
-        $accessToken = $request->get('access_token');
-        $refreshToken = $request->get('refresh_token');
+        $accessToken = $request->request->get('access_token');
+        $refreshToken = $request->request->get('refresh_token');
 
         if ($accessToken === null) {
             $accessToken = str_replace('Bearer ', '', $request->headers->get('authorization'));
