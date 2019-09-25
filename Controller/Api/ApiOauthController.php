@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PaneeDesign\ApiBundle\Controller\Api;
 
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
 use FOS\UserBundle\Model\UserInterface;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
-use Symfony\Component\HttpFoundation\Request;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 
 /**
  * @Annotations\RouteResource("Oauth")
  */
-class ApiOauthController extends FOSRestController
+class ApiOauthController extends AbstractFOSRestController
 {
     /**
      * Refresh given token
@@ -46,9 +48,9 @@ class ApiOauthController extends FOSRestController
      *
      * @param Request $request
      *
-     * @return array
-     *
      * @throws \Exception
+     *
+     * @return array
      */
     public function refreshTokenAction(Request $request)
     {
@@ -72,7 +74,7 @@ class ApiOauthController extends FOSRestController
 
         $session->set('access_token', $oAuthToken['access_token']);
 
-        if (array_key_exists('refresh_token', $oAuthToken) === true) {
+        if (\array_key_exists('refresh_token', $oAuthToken) === true) {
             $session->set('refresh_token', $oAuthToken['refresh_token']);
         }
 
@@ -99,7 +101,7 @@ class ApiOauthController extends FOSRestController
     {
         $accessToken = $request->request->get('access_token');
         $accessToken = trim(str_replace('Bearer', '', $accessToken));
-        $headers = function_exists('getallheaders') ? getallheaders() : null;
+        $headers = \function_exists('getallheaders') ? getallheaders() : null;
 
         if ($headers !== null && isset($headers['Authorization'])) {
             $request->headers->set('Authorization', $headers['Authorization']);

@@ -1,6 +1,8 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Fabiano Roberto <fabiano@paneedesign.com>
+ * Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 28/01/19
  * Time: 13:01.
  */
@@ -150,7 +152,7 @@ class RestApiHandler
                 $formattedData[$key] = null;
             } elseif ('[]' === $value) {
                 $formattedData[$key] = [];
-            } elseif (true === is_array($value)) {
+            } elseif (true === \is_array($value)) {
                 $formattedData[$key] = $this->formatRequestData($value);
             }
         }

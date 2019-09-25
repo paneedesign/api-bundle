@@ -7,7 +7,7 @@
     "license": "proprietary",
     "authors": [{
         "name": "Fabiano Roberto",
-        "email": "fabiano@paneedesign.com"
+        "email": "fabiano.roberto@ped.technology"
     }],
     "require": {
         "php": "^5.6|^7.0",

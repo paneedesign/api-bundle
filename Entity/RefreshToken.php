@@ -1,7 +1,8 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: Fabiano Roberto <fabiano@paneedesign.com>
+ * User: Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 08/09/15
  * Time: 12:09
  */
@@ -13,8 +14,6 @@ use FOS\OAuthServerBundle\Entity\RefreshToken as BaseRefreshToken;
 use FOS\OAuthServerBundle\Model\RefreshTokenInterface;
 
 /**
- * @author Fabiano Roberto <fabiano@paneedesign.com>
- *
  * @ORM\Table("api_refresh_token")
  * @ORM\Entity
  */

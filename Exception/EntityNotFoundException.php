@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * User: Fabiano Roberto <fabiano@paneedesign.com>
+ * User: Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 26/02/19
  * Time: 15:00.
  */
@@ -26,7 +26,7 @@ class EntityNotFoundException extends \Exception
      * EntityNotFoundException constructor.
      *
      * @param string     $entity
-     * @param string|int $identifier
+     * @param int|string $identifier
      */
     public function __construct(string $entity, $identifier)
     {
@@ -51,6 +51,6 @@ class EntityNotFoundException extends \Exception
 
     private function stripNamespaceFromClassName(string $className): string
     {
-        return substr($className, strrpos($className, '\\') - strlen($className) + 1);
+        return substr($className, strrpos($className, '\\') - \strlen($className) + 1);
     }
 }

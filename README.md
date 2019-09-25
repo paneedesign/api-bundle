@@ -22,7 +22,7 @@ Pane&Design repository is private so, add to `composer.json` this `vcs`
     ...
     "require": {
         ...
-        "paneedesign/api-bundle": "^3.0"   
+        "paneedesign/api-bundle": "^4.0"   
     }
 ```
 

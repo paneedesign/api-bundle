@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Fabiano Roberto <fabiano@paneedesign.com>
+ * Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 28/01/19
  * Time: 13:01.
  */
@@ -64,9 +64,9 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
      *
      * @param mixed $id
      *
-     * @return object
-     *
      * @throws EntityNotFoundException
+     *
+     * @return object
      */
     public function get($id)
     {
@@ -124,9 +124,9 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
      *
      * @param array $parameters
      *
-     * @return object
-     *
      * @throws \Exception
+     *
+     * @return object
      */
     public function post(array $parameters)
     {
@@ -146,7 +146,7 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
     {
         $elem = $this->getRepository($this->className)->findBy($criteria);
 
-        return count($elem);
+        return \count($elem);
     }
 
     /**
@@ -155,10 +155,10 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
      * @param int   $id
      * @param array $parameters
      *
-     * @return object
-     *
      * @throws EntityNotFoundException
      * @throws \Exception
+     *
+     * @return object
      */
     public function put($id, array $parameters)
     {
@@ -177,10 +177,10 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
      * @param int   $id
      * @param array $parameters
      *
-     * @return object
-     *
      * @throws EntityNotFoundException
      * @throws \Exception
+     *
+     * @return object
      */
     public function patch($id, array $parameters)
     {
@@ -198,9 +198,9 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
      *
      * @param int $id
      *
-     * @return bool
-     *
      * @throws EntityNotFoundException
+     *
+     * @return bool
      */
     public function delete($id)
     {
@@ -223,14 +223,14 @@ final class ItemHandler extends ObjectManagerDecorator implements ItemHandlerInt
      * @param array  $parameters
      * @param string $method
      *
-     * @return object
-     *
      * @throws \Exception
+     *
+     * @return object
      */
     private function processForm($item, array $parameters, $method = 'PUT')
     {
         if (empty($this->formName)) {
-            throw new \Exception('No formName set for ' . get_class());
+            throw new \Exception('No formName set for ' . __CLASS__);
         }
 
         $form = $this->formFactory->create($this->formName, $item, ['method' => $method]);

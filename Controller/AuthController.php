@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PaneeDesign\ApiBundle\Controller;
 
+use OAuth2;
 use PaneeDesign\ApiBundle\OAuth2\Client;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use OAuth2;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
@@ -23,9 +25,9 @@ class AuthController extends Controller
      *
      * @param Request $request
      *
-     * @return RedirectResponse|Response
-     *
      * @throws OAuth2\Exception
+     *
+     * @return RedirectResponse|Response
      */
     public function authAction(Request $request)
     {

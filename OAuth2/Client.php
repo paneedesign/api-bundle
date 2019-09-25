@@ -1,6 +1,7 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
  * User: fabianoroberto
  * Date: 11/09/15
  * Time: 09:22
@@ -40,9 +41,9 @@ class Client
     /**
      * @param string $code
      *
-     * @return mixed
-     *
      * @throws AdoyOAuth2\Exception
+     *
+     * @return mixed
      */
     public function getAccessToken($code = null)
     {
@@ -67,9 +68,9 @@ class Client
     /**
      * @param string $url
      *
-     * @return mixed
-     *
      * @throws AdoyOAuth2\Exception
+     *
+     * @return mixed
      */
     public function fetch($url)
     {

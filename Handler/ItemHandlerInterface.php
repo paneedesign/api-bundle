@@ -1,6 +1,7 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
  * User: luigi
  * Date: 31/08/15
  * Time: 09:13

@@ -1,7 +1,8 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: Fabiano Roberto <fabiano@paneedesign.com>
+ * User: Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 08/09/15
  * Time: 12:08
  */
@@ -13,8 +14,6 @@ use FOS\OAuthServerBundle\Entity\AccessToken as BaseAccessToken;
 use FOS\OAuthServerBundle\Model\AccessTokenInterface;
 
 /**
- * @author Fabiano Roberto <fabiano@paneedesign.com>
- *
  * @ORM\Table("api_access_token")
  * @ORM\Entity
  */

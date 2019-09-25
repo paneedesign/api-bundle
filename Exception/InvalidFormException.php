@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * User: Fabiano Roberto <fabiano@paneedesign.com>
+ * User: Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 26/02/19
  * Time: 15:00.
  */

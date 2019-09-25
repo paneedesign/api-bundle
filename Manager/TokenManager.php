@@ -1,6 +1,7 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
  * User: fabianoroberto
  * Date: 15/09/15
  * Time: 14:42
@@ -32,9 +33,9 @@ class TokenManager extends FOSTokenManager
      * @param UserInterface $user
      * @param string        $password
      *
-     * @return mixed|string
-     *
      * @throws \Exception
+     *
+     * @return mixed|string
      */
     public function getAccessToken(UserInterface $user, $password)
     {
@@ -53,9 +54,9 @@ class TokenManager extends FOSTokenManager
      * @param UserInterface $user
      * @param string        $refreshToken
      *
-     * @return mixed|string
-     *
      * @throws \Exception
+     *
+     * @return mixed|string
      */
     public function getOAuthToken(UserInterface $user, $refreshToken = null)
     {
@@ -94,9 +95,9 @@ class TokenManager extends FOSTokenManager
      * @param UserInterface $user
      * @param string        $password
      *
-     * @return mixed
-     *
      * @throws \Exception
+     *
+     * @return mixed
      */
     private function getAccessTokenByCredetial(UserInterface $user, $password)
     {
@@ -136,9 +137,9 @@ class TokenManager extends FOSTokenManager
      * @param string        $grantType
      * @param string        $refreshToken
      *
-     * @return mixed
-     *
      * @throws \Exception
+     *
+     * @return mixed
      */
     private function getApiAccessTokenByUser(
         UserInterface $user,
@@ -179,7 +180,7 @@ class TokenManager extends FOSTokenManager
         $response = $tokenController->tokenAction($request);
         $content = (array) json_decode($response->getContent());
 
-        if (array_key_exists('access_token', $content)) {
+        if (\array_key_exists('access_token', $content)) {
             return $content;
         }
 

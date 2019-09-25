@@ -1,20 +1,19 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: Fabiano Roberto <fabiano@paneedesign.com>
+ * User: Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 08/09/15
  * Time: 12:07
  */
 
 namespace PaneeDesign\ApiBundle\Entity;
 
+use Doctrine\ORM\Mapping as ORM;
 use FOS\OAuthServerBundle\Entity\Client as BaseClient;
 use FOS\OAuthServerBundle\Model\ClientInterface;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @author Fabiano Roberto <fabiano@paneedesign.com>
- *
  * @ORM\Table("api_client")
  * @ORM\Entity
  */
