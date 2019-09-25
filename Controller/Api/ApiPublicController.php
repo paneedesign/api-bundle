@@ -3,7 +3,7 @@
 namespace PaneeDesign\ApiBundle\Controller\Api;
 
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 
 use PaneeDesign\ApiBundle\Exception\JsonException;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
@@ -20,7 +20,7 @@ use Swagger\Annotations as SWG;
 /**
  * @Annotations\RouteResource("Public")
  */
-class ApiPublicController extends FOSRestController
+class ApiPublicController extends AbstractFOSRestController
 {
     /**
      * @var ContainerInterface
