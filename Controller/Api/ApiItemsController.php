@@ -13,12 +13,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\Request;
 
 use FOS\RestBundle\Controller\Annotations;
-use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\UserBundle\Model\UserInterface;
 
 use Swagger\Annotations as SWG;
 
-abstract class ApiItemsController extends FOSRestController
+abstract class ApiItemsController extends AbstractFOSRestController
 {
     /**
      * @var ItemHandler
