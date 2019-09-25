@@ -5,10 +5,16 @@
     "keywords": ["api", "oauth", "php"],
     "homepage": "http://www.paneedesign.com/",
     "license": "proprietary",
-    "authors": [{
-        "name": "Fabiano Roberto",
-        "email": "fabiano.roberto@ped.technology"
-    }],
+    "authors": [
+        {
+            "name": "Fabiano Roberto",
+            "email": "fabiano.roberto@ped.technology"
+        },
+        {
+            "name": "Luigi Cardamone",
+            "email": "luigi.cardamone@ped.technology"
+        }
+    ],
     "require": {
         "php": "^5.6|^7.0",
         "symfony/framework-bundle": "^3.2",
