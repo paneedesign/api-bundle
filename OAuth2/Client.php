@@ -1,7 +1,8 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: fabianoroberto
+ * User: Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 11/09/15
  * Time: 09:22
  */
@@ -21,12 +22,12 @@ class Client
 
     public function __construct(AdoyOAuth2\Client $client, $authEndpoint, $tokenEndpoint, $redirectUrl, $grant, $params)
     {
-        $this->client        = $client;
-        $this->authEndpoint  = $authEndpoint;
+        $this->client = $client;
+        $this->authEndpoint = $authEndpoint;
         $this->tokenEndpoint = $tokenEndpoint;
-        $this->redirectUrl   = $redirectUrl;
-        $this->grant         = $grant;
-        $this->params        = $params;
+        $this->redirectUrl = $redirectUrl;
+        $this->grant = $grant;
+        $this->params = $params;
     }
 
     /**
@@ -40,8 +41,9 @@ class Client
     /**
      * @param string $code
      *
-     * @return mixed
      * @throws AdoyOAuth2\Exception
+     *
+     * @return mixed
      */
     public function getAccessToken($code = null)
     {
@@ -66,8 +68,9 @@ class Client
     /**
      * @param string $url
      *
-     * @return mixed
      * @throws AdoyOAuth2\Exception
+     *
+     * @return mixed
      */
     public function fetch($url)
     {

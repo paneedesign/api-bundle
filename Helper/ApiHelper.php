@@ -1,10 +1,12 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: Fabiano Roberto
+ * User: Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 27/02/17
  * Time: 10:13
  */
+
 namespace PaneeDesign\ApiBundle\Helper;
 
 use PaneeDesign\ApiBundle\Exception\JsonException;
@@ -12,21 +14,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ApiHelper
- *
- * @author Fabiano Roberto <fabiano@paneedesign.com>
- * @package PaneeDesign\ApiBundle\Helper
  */
 class ApiHelper
 {
-    const CODE_ERROR     = 500;
-    const CODE_SUCCESS   = 200;
-    const CODE_DUPLICATE = 409;
+    public const CODE_ERROR = 500;
+    public const CODE_SUCCESS = 200;
+    public const CODE_DUPLICATE = 409;
 
     /**
      * Custom Response
      *
-     * @param int $httpCode
-     * @param int $code
+     * @param int    $httpCode
+     * @param int    $code
      * @param string $message
      * @param string $description
      *
@@ -39,13 +38,13 @@ class ApiHelper
         $description = ''
     ) {
         $payload = [
-            'code'        => $code,
-            'message'     => $message,
-            'description' => $description
+            'code' => $code,
+            'message' => $message,
+            'description' => $description,
         ];
 
         return new Response(
-            \json_encode($payload),
+            json_encode($payload),
             $httpCode,
             ['Content-Type' => 'application/json']
         );
@@ -54,9 +53,9 @@ class ApiHelper
     /**
      * Success Response
      *
-     * @param string|array $data
-     * @param integer $count
-     * @param array $pagination
+     * @param array|string $data
+     * @param int          $count
+     * @param array        $pagination
      *
      * @return array
      */
@@ -66,9 +65,9 @@ class ApiHelper
 
         if ($count !== null) {
             $toReturn = [
-                'data'       => $data,
-                'count'      => (int) $count,
-                'pagination' => $pagination
+                'data' => $data,
+                'count' => (int) $count,
+                'pagination' => $pagination,
             ];
         }
 
@@ -78,8 +77,9 @@ class ApiHelper
     /**
      * Error Response
      *
-     * @param int $httpCode
+     * @param int    $httpCode
      * @param string $message
+     *
      * @throws JsonException
      */
     public static function errorResponse($httpCode = self::CODE_ERROR, $message = 'Internal Server Error')
@@ -110,13 +110,13 @@ class ApiHelper
                 $formattedData[$key] = null;
             } elseif ($value === '[]') {
                 $formattedData[$key] = [];
-            } elseif (is_array($value) === true) {
+            } elseif (\is_array($value) === true) {
                 $formattedData[$key] = self::formatRequestData($value);
             } else {
                 $formattedData[$key] = $value;
             }
 
-            if ($deleteEmptyArrays && empty($formattedData[$key]) && is_array($formattedData[$key])) {
+            if ($deleteEmptyArrays && empty($formattedData[$key]) && \is_array($formattedData[$key])) {
                 unset($formattedData[$key]);
             }
         }

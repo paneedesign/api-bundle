@@ -1,7 +1,8 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * Item: luigi
+ * User: Luigi Cardamone <luigi.cardamone@ped.technology>
  * Date: 31/08/15
  * Time: 09:09
  */
@@ -11,9 +12,7 @@ namespace PaneeDesign\ApiBundle\Handler;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\Persistence\ObjectRepository;
-
 use PaneeDesign\ApiBundle\Exception\InvalidFormException;
-
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
@@ -39,15 +38,15 @@ class ItemHandler implements ItemHandlerInterface
 
     public function __construct(ObjectManager $om, ContainerInterface $container, FormFactoryInterface $formFactory)
     {
-        $this->om          = $om;
-        $this->container   = $container;
+        $this->om = $om;
+        $this->container = $container;
         $this->formFactory = $formFactory;
     }
 
     public function setEntityClass($entityClass)
     {
         $this->entityClass = $entityClass;
-        $this->repository  = $this->om->getRepository($this->entityClass);
+        $this->repository = $this->om->getRepository($this->entityClass);
     }
 
     /**
@@ -116,8 +115,8 @@ class ItemHandler implements ItemHandlerInterface
      *
      * @param array $criteria
      * @param array $orderBy
-     * @param int $limit
-     * @param int $offset
+     * @param int   $limit
+     * @param int   $offset
      *
      * @return array
      */
@@ -141,7 +140,7 @@ class ItemHandler implements ItemHandlerInterface
     /**
      * Get a list of Items.
      *
-     * @param int $limit the limit of the result
+     * @param int $limit  the limit of the result
      * @param int $offset starting from the offset
      *
      * @return array
@@ -156,8 +155,9 @@ class ItemHandler implements ItemHandlerInterface
      *
      * @param array $parameters
      *
-     * @return object
      * @throws \Exception
+     *
+     * @return object
      */
     public function post(array $parameters)
     {
@@ -170,23 +170,25 @@ class ItemHandler implements ItemHandlerInterface
      * Get count of Item by criteria.
      *
      * @param array $criteria
+     *
      * @return int
      */
     public function count($criteria = [])
     {
         $elem = $this->repository->findBy($criteria);
 
-        return count($elem);
+        return \count($elem);
     }
 
     /**
      * Edit a Item.
      *
-     * @param int $id
+     * @param int   $id
      * @param array $parameters
      *
-     * @return object
      * @throws \Exception
+     *
+     * @return object
      */
     public function put($id, array $parameters)
     {
@@ -202,11 +204,12 @@ class ItemHandler implements ItemHandlerInterface
     /**
      * Partially update a Item.
      *
-     * @param int $id
+     * @param int   $id
      * @param array $parameters
      *
-     * @return object
      * @throws \Exception
+     *
+     * @return object
      */
     public function patch($id, array $parameters)
     {
@@ -223,6 +226,7 @@ class ItemHandler implements ItemHandlerInterface
      * Delete a Item.
      *
      * @param int $id
+     *
      * @return bool
      */
     public function delete($id)
@@ -243,15 +247,17 @@ class ItemHandler implements ItemHandlerInterface
      * Processes the form.
      *
      * @param object $item
-     * @param array $parameters
-     * @param String $method
-     * @return object
+     * @param array  $parameters
+     * @param string $method
+     *
      * @throws \Exception
+     *
+     * @return object
      */
-    protected function processForm($item, array $parameters, $method = "PUT")
+    protected function processForm($item, array $parameters, $method = 'PUT')
     {
         if (empty($this->entityForm)) {
-            throw new \Exception("No entityForm set for ".get_class());
+            throw new \Exception('No entityForm set for ' . __CLASS__);
         }
 
         $form = $this->formFactory->create($this->entityForm, $item, ['method' => $method]);

@@ -1,7 +1,8 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: fabianoroberto
+ * User: Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 11/09/15
  * Time: 14:19
  */
@@ -10,9 +11,7 @@ namespace PaneeDesign\ApiBundle\OAuth2;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
-
 use FOS\OAuthServerBundle\Storage\GrantExtensionInterface;
-
 use OAuth2\Model\IOAuth2Client;
 
 class ApiKeyGrantExtension implements GrantExtensionInterface
@@ -26,7 +25,7 @@ class ApiKeyGrantExtension implements GrantExtensionInterface
      * ApiKeyGrantExtension constructor.
      *
      * @param EntityManager $em
-     * @param string $entityClass
+     * @param string        $entityClass
      */
     public function __construct(EntityManager $em, $entityClass)
     {

@@ -1,21 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PaneeDesign\ApiBundle\Controller\Api;
 
-use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
+use FOS\RestBundle\Controller\Annotations;
 use FOS\UserBundle\Model\UserInterface;
-
-use PaneeDesign\ApiBundle\Exception\JsonException;
 use PaneeDesign\ApiBundle\Helper\ApiHelper;
 use PaneeDesign\ApiBundle\Manager\TokenManager;
-
+use Swagger\Annotations as SWG;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-
-use Swagger\Annotations as SWG;
 
 /**
  * @Annotations\RouteResource("Public")
@@ -37,7 +35,7 @@ class ApiPublicController extends AbstractFOSRestController
         parent::setContainer($container);
 
         $request = Request::createFromGlobals();
-        $locale  = $request->query->get('_locale');
+        $locale = $request->query->get('_locale');
 
         if ($locale === null) {
             $locale = $request->headers->get('_locale');
@@ -76,12 +74,13 @@ class ApiPublicController extends AbstractFOSRestController
      * @Annotations\Post("/publics/tokens/refresh")
      *
      * @param Request $request
+     *
      * @return Response
      */
     public function refreshTokenAction(Request $request)
     {
-        $session      = $request->getSession();
-        $accessToken  = $request->get('access_token');
+        $session = $request->getSession();
+        $accessToken = $request->get('access_token');
         $refreshToken = $request->get('refresh_token');
 
         if ($accessToken === null) {
@@ -97,11 +96,11 @@ class ApiPublicController extends AbstractFOSRestController
 
             /* @var TokenManager $tokenManager */
             $tokenManager = $this->container->get('ped_api.access_token_manager.default');
-            $oAuthToken   = $tokenManager->getOAuthToken($user, $refreshToken);
+            $oAuthToken = $tokenManager->getOAuthToken($user, $refreshToken);
 
             $session->set('access_token', $oAuthToken['access_token']);
 
-            if (array_key_exists('refresh_token', $oAuthToken) === true) {
+            if (\array_key_exists('refresh_token', $oAuthToken) === true) {
                 $session->set('refresh_token', $oAuthToken['refresh_token']);
             }
 
@@ -117,7 +116,7 @@ class ApiPublicController extends AbstractFOSRestController
 
     /**
      * @param UserInterface $user
-     * @param array $oAuthToken
+     * @param array         $oAuthToken
      *
      * @return array
      */
@@ -130,6 +129,7 @@ class ApiPublicController extends AbstractFOSRestController
 
     /**
      * @param \OAuth2\OAuth2ServerException $oAuthException
+     *
      * @return Response
      */
     protected function throwRefreshTokenJsonException(\OAuth2\OAuth2ServerException $oAuthException)
@@ -146,6 +146,7 @@ class ApiPublicController extends AbstractFOSRestController
 
     /**
      * @param \Exception $exception
+     *
      * @return Response
      */
     protected function throwRefreshTokenException(\Exception $exception)
@@ -169,13 +170,14 @@ class ApiPublicController extends AbstractFOSRestController
 
     /**
      * @param Request $request
+     *
      * @return array|mixed|string
      */
     protected function getAccessToken(Request $request)
     {
         $accessToken = $request->request->get('access_token');
         $accessToken = trim(str_replace('Bearer', '', $accessToken));
-        $headers     = function_exists('getallheaders') ? getallheaders() : null;
+        $headers = \function_exists('getallheaders') ? getallheaders() : null;
 
         if ($headers !== null && isset($headers['Authorization'])) {
             $request->headers->set('Authorization', $headers['Authorization']);
@@ -201,7 +203,7 @@ class ApiPublicController extends AbstractFOSRestController
      *
      * @return string The translated string
      */
-    protected function translate($id, array $parameters = array(), $domain = null, $locale = null)
+    protected function translate($id, array $parameters = [], $domain = null, $locale = null)
     {
         $translator = $this->get('translator');
 

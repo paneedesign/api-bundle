@@ -1,7 +1,8 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: fabianoroberto
+ * User: Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 27/05/16
  * Time: 10:36
  */

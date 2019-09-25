@@ -1,7 +1,8 @@
 <?php
+
+declare(strict_types=1);
 /**
- * Created by PhpStorm.
- * User: fabianoroberto
+ * User: Fabiano Roberto <fabiano.roberto@ped.technology>
  * Date: 27/05/16
  * Time: 10:36
  */
@@ -15,8 +16,9 @@ class JsonException extends \Exception implements JsonExceptionInterface
 {
     /**
      * JsonException constructor.
-     * @param string $message
-     * @param int $code
+     *
+     * @param string         $message
+     * @param int            $code
      * @param Exception|null $previous
      */
     public function __construct($message = '', $code = Response::HTTP_INTERNAL_SERVER_ERROR, Exception $previous = null)

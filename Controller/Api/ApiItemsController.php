@@ -1,41 +1,36 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PaneeDesign\ApiBundle\Controller\Api;
 
-use PaneeDesign\ApiBundle\Exception\InvalidFormException;
-use PaneeDesign\ApiBundle\Handler\ItemHandler;
-
-use PaneeDesign\ApiBundle\Helper\ApiHelper;
-use PaneeDesign\ApiBundle\Manager\TokenManager;
-
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpFoundation\Request;
-
-use FOS\RestBundle\Controller\Annotations;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\UserBundle\Model\UserInterface;
-
+use PaneeDesign\ApiBundle\Handler\ItemHandler;
+use PaneeDesign\ApiBundle\Helper\ApiHelper;
+use PaneeDesign\ApiBundle\Manager\TokenManager;
 use Swagger\Annotations as SWG;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 abstract class ApiItemsController extends AbstractFOSRestController
 {
     /**
-     * @var ItemHandler
-     */
-    private $handler;
-
-    /**
      * @var ContainerInterface
      */
     protected $container;
+    /**
+     * @var ItemHandler
+     */
+    private $handler;
 
     public function setContainer(ContainerInterface $container = null)
     {
         parent::setContainer($container);
 
         $request = Request::createFromGlobals();
-        $locale  = $request->query->get('_locale');
+        $locale = $request->query->get('_locale');
 
         $accessToken = $this->getAccessToken($request);
 
@@ -47,11 +42,6 @@ abstract class ApiItemsController extends AbstractFOSRestController
         $this->handler->setAccessToken($accessToken);
         $this->handler->setLocale($locale);
     }
-
-    /**
-     * @return ItemHandler
-     */
-    abstract protected function getHandler();
 
     /**
      * List all Items
@@ -84,12 +74,14 @@ abstract class ApiItemsController extends AbstractFOSRestController
      *     )
      * )
      *
+     * @param Request $request
+     *
      * @return array
      */
     public function cgetAction(Request $request)
     {
         $offset = $request->query->get('offset');
-        $limit  = $request->query->get('limit');
+        $limit = $request->query->get('limit');
 
         return $this->handler->all($limit, $offset);
     }
@@ -117,11 +109,12 @@ abstract class ApiItemsController extends AbstractFOSRestController
      * )
      *
      * @param Request $request
+     *
      * @return int
      */
     public function countAction(Request $request)
     {
-        $criteria = $request->query->get('filters', false) ?: array();
+        $criteria = $request->query->get('filters', false) ?: [];
 
         return $this->handler->count($criteria);
     }
@@ -149,9 +142,11 @@ abstract class ApiItemsController extends AbstractFOSRestController
      * )
      *
      * @param Request $request
-     * @param int $id the Item id
-     * @return object
+     * @param int     $id      the Item id
+     *
      * @throws NotFoundHttpException when Item not exist
+     *
+     * @return object
      */
     public function getAction(Request $request, $id)
     {
@@ -190,12 +185,14 @@ abstract class ApiItemsController extends AbstractFOSRestController
      * )
      *
      * @param Request $request the request object
-     * @return object
+     *
      * @throws \Exception
+     *
+     * @return object
      */
     public function postAction(Request $request)
     {
-        $toPost  = ApiHelper::formatRequestData($request->request->all());
+        $toPost = ApiHelper::formatRequestData($request->request->all());
         $newItem = $this->handler->post(
             $toPost
         );
@@ -239,11 +236,12 @@ abstract class ApiItemsController extends AbstractFOSRestController
      * )
      *
      * @param Request $request the request object
-     * @param int $id the Item id
+     * @param int     $id      the Item id
      *
-     * @return object
      * @throws NotFoundHttpException when Item not exist
      * @throws \Exception
+     *
+     * @return object
      */
     public function patchAction(Request $request, $id)
     {
@@ -276,12 +274,17 @@ abstract class ApiItemsController extends AbstractFOSRestController
      *
      * @param int $id the Item id
      *
-     * @return boolean
+     * @return bool
      */
     public function deleteAction($id)
     {
         return $this->getHandler()->delete($id);
     }
+
+    /**
+     * @return ItemHandler
+     */
+    abstract protected function getHandler();
 
     /**
      * @param string $accessToken
@@ -292,7 +295,7 @@ abstract class ApiItemsController extends AbstractFOSRestController
     {
         /* @var TokenManager $tokenManager */
         $tokenManager = $this->container->get('fos_oauth_server.access_token_manager.default');
-        $accessToken  = $tokenManager->findTokenByToken($accessToken);
+        $accessToken = $tokenManager->findTokenByToken($accessToken);
 
         if ($accessToken === null) {
             $user = null;
@@ -308,9 +311,10 @@ abstract class ApiItemsController extends AbstractFOSRestController
      * Fetch a Item or throw an 404 Exception.
      *
      * @param int $id
-     * @return object
      *
      * @throws NotFoundHttpException
+     *
+     * @return object
      */
     protected function getOr404($id)
     {
@@ -333,7 +337,7 @@ abstract class ApiItemsController extends AbstractFOSRestController
      *
      * @return string The translated string
      */
-    protected function translate($id, array $parameters = array(), $domain = null, $locale = null)
+    protected function translate($id, array $parameters = [], $domain = null, $locale = null)
     {
         $translator = $this->get('translator');
 
@@ -342,8 +346,8 @@ abstract class ApiItemsController extends AbstractFOSRestController
 
     protected function getBy($criteria, Request $request, $orderBy = null)
     {
-        $offset  = $request->query->get('offset');
-        $limit   = $request->query->get('limit');
+        $offset = $request->query->get('offset');
+        $limit = $request->query->get('limit');
 
         if (empty($limit)) {
             $limit = null;
@@ -356,7 +360,7 @@ abstract class ApiItemsController extends AbstractFOSRestController
     {
         $accessToken = $request->query->get('access_token');
         $accessToken = trim(str_replace('Bearer', '', $accessToken));
-        $headers     = function_exists('getallheaders') ? getallheaders() : null;
+        $headers = \function_exists('getallheaders') ? getallheaders() : null;
 
         if ($headers !== null && isset($headers['Authorization'])) {
             $request->headers->set('Authorization', $headers['Authorization']);
@@ -374,10 +378,10 @@ abstract class ApiItemsController extends AbstractFOSRestController
      * Get Pagination of collection
      *
      * @param string $apiName
-     * @param int $count
-     * @param int $limit
-     * @param int $offset
-     * @param array $extraParams
+     * @param int    $count
+     * @param int    $limit
+     * @param int    $offset
+     * @param array  $extraParams
      *
      * @return array
      */
@@ -388,10 +392,10 @@ abstract class ApiItemsController extends AbstractFOSRestController
 
         if ((int) $limit === 0) {
             $pages = 1;
-            $page  = 1;
+            $page = 1;
         } else {
             $pages = ceil($count / $limit);
-            $page  = 1 + floor($offset / $limit);
+            $page = 1 + floor($offset / $limit);
 
             if ($limit + $offset < $count) {
                 $nextParams = array_merge($extraParams, ['limit' => $limit, 'offset' => $limit + $offset]);
@@ -405,10 +409,10 @@ abstract class ApiItemsController extends AbstractFOSRestController
         }
 
         return [
-            'page'  => $page,
+            'page' => $page,
             'pages' => $pages,
-            'next'  => $nextUrl,
-            'prev'  => $prevUrl,
+            'next' => $nextUrl,
+            'prev' => $prevUrl,
         ];
     }
 }
